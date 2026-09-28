@@ -1,0 +1,221 @@
+[gd_scene format=3 uid="uid://dttqi07geijgu"]
+
+[ext_resource type="Script" uid="uid://cnn4yywl7kipc" path="res://scenes/welcome_scene.gd" id="1_q52fd"]
+[ext_resource type="Texture2D" uid="uid://bqjqd1lsqyr2y" path="res://assets/textures/menu.png" id="2_56v1d"]
+[ext_resource type="Texture2D" uid="uid://5bq46o3i2adv" path="res://assets/textures/welcome_tank.tres" id="3_r043e"]
+[ext_resource type="Shader" uid="uid://c0ueyitakmns2" path="res://assets/shader/shader_white.gdshader" id="4_i3k6d"]
+[ext_resource type="Texture2D" uid="uid://bweeniirou3q8" path="res://assets/textures/ui-design.png" id="5_qhx7g"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_56v1d"]
+shader = ExtResource("4_i3k6d")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r043e"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(67, 50, 26, 13)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qhx7g"]
+bg_color = Color(0.6, 0.6, 0.6, 0.85490197)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+corner_detail = 18
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qqjor"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(2, 2, 54, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hhnpg"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(0, 16, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j4puw"]
+atlas = SubResource("AtlasTexture_hhnpg")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_he3cm"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(0, 32, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xasuh"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(64, 0, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i3k6d"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(64, 16, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhx7g"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(64, 32, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fdnp"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(50, 67, 44, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kgj2b"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 17, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x66gv"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 1, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b1nxc"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 17, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5hhb8"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 1, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2wccb"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 17, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ax8j8"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 1, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vfda3"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 17, 15, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_08ct4"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(97, 1, 15, 14)
+
+[node name="WelcomeScene" type="Node2D" unique_id=624399489 node_paths=PackedStringArray("_settings_popup", "_music_checkbox", "_game_easy_checkbox", "_game_normal_checkbox", "_game_difficult_checkbox")]
+script = ExtResource("1_q52fd")
+_settings_popup = NodePath("SettingsPopup")
+_music_checkbox = NodePath("SettingsPopup/MusicCheckBox")
+_game_easy_checkbox = NodePath("SettingsPopup/GameEasyCheckBox")
+_game_normal_checkbox = NodePath("SettingsPopup/GameNormalCheckBox")
+_game_difficult_checkbox = NodePath("SettingsPopup/GameDiffcultCheckBox")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1677467059]
+limit_left = 0
+limit_top = 0
+limit_right = 512
+limit_bottom = 448
+limit_smoothed = true
+
+[node name="Background" type="ColorRect" parent="." unique_id=1935140939]
+offset_right = 512.0
+offset_bottom = 448.0
+color = Color(0.25882354, 0.25882354, 0.25882354, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="Background" unique_id=341781490]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 448.0
+
+[node name="Welcome" type="TextureRect" parent="Background/CenterContainer" unique_id=3487560]
+layout_mode = 2
+texture = ExtResource("2_56v1d")
+
+[node name="SelectTank" type="TextureRect" parent="Background" unique_id=1895906070]
+layout_mode = 0
+offset_left = 142.0
+offset_top = 249.0
+offset_right = 169.0
+offset_bottom = 276.0
+texture = ExtResource("3_r043e")
+stretch_mode = 4
+
+[node name="SettingsButton" type="TextureButton" parent="Background" unique_id=1710589279]
+material = SubResource("ShaderMaterial_56v1d")
+layout_mode = 0
+offset_left = 395.0
+offset_top = 31.0
+offset_right = 427.0
+offset_bottom = 49.0
+texture_normal = SubResource("AtlasTexture_r043e")
+stretch_mode = 4
+
+[node name="SettingsPopup" type="Popup" parent="." unique_id=500452069]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(512, 448)
+max_size = Vector2i(512, 448)
+
+[node name="BackgroundOverlay" type="ColorRect" parent="SettingsPopup" unique_id=2121830812]
+offset_right = 512.0
+offset_bottom = 448.0
+color = Color(0, 0, 0, 0.8117647)
+
+[node name="CenterContainer" type="CenterContainer" parent="SettingsPopup" unique_id=1121076949]
+custom_minimum_size = Vector2(512, 448)
+
+[node name="ColorRect" type="Panel" parent="SettingsPopup/CenterContainer" unique_id=1455815956]
+custom_minimum_size = Vector2(300, 260)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qhx7g")
+
+[node name="DialogTitle" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=769547845]
+position = Vector2(257, 130)
+scale = Vector2(2, 2)
+texture = SubResource("AtlasTexture_qqjor")
+
+[node name="MusicSubTitle" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=1984443766]
+position = Vector2(160, 200)
+texture = SubResource("AtlasTexture_j4puw")
+
+[node name="GameLevelSubTitle" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=427721499]
+position = Vector2(160, 247)
+texture = SubResource("AtlasTexture_he3cm")
+
+[node name="Sprite2D" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=989182988]
+position = Vector2(237, 248)
+texture = SubResource("AtlasTexture_xasuh")
+
+[node name="Sprite2D2" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=460892620]
+position = Vector2(287, 249)
+texture = SubResource("AtlasTexture_i3k6d")
+
+[node name="Sprite2D3" type="Sprite2D" parent="SettingsPopup/CenterContainer" unique_id=720498291]
+position = Vector2(337, 249)
+texture = SubResource("AtlasTexture_qhx7g")
+
+[node name="DialogBtnClose" type="TextureButton" parent="SettingsPopup" unique_id=357685746]
+offset_left = 228.0
+offset_top = 295.0
+offset_right = 280.0
+offset_bottom = 322.0
+texture_normal = SubResource("AtlasTexture_5fdnp")
+stretch_mode = 4
+
+[node name="MusicCheckBox" type="CheckBox" parent="SettingsPopup" unique_id=1794793650]
+offset_left = 351.0
+offset_top = 189.0
+offset_right = 375.0
+offset_bottom = 213.0
+theme_override_icons/checked = SubResource("AtlasTexture_kgj2b")
+theme_override_icons/unchecked = SubResource("AtlasTexture_x66gv")
+
+[node name="GameEasyCheckBox" type="CheckBox" parent="SettingsPopup" unique_id=571749202]
+offset_left = 249.0
+offset_top = 238.0
+offset_right = 273.0
+offset_bottom = 262.0
+theme_override_icons/checked = SubResource("AtlasTexture_b1nxc")
+theme_override_icons/unchecked = SubResource("AtlasTexture_5hhb8")
+
+[node name="GameNormalCheckBox" type="CheckBox" parent="SettingsPopup" unique_id=71418728]
+offset_left = 300.0
+offset_top = 238.0
+offset_right = 324.0
+offset_bottom = 262.0
+theme_override_icons/checked = SubResource("AtlasTexture_2wccb")
+theme_override_icons/unchecked = SubResource("AtlasTexture_ax8j8")
+
+[node name="GameDiffcultCheckBox" type="CheckBox" parent="SettingsPopup" unique_id=685503155]
+offset_left = 351.0
+offset_top = 238.0
+offset_right = 375.0
+offset_bottom = 262.0
+theme_override_icons/checked = SubResource("AtlasTexture_vfda3")
+theme_override_icons/unchecked = SubResource("AtlasTexture_08ct4")
+
+[connection signal="button_up" from="Background/SettingsButton" to="." method="_on_settings_button_click"]
+[connection signal="button_down" from="SettingsPopup/DialogBtnClose" to="." method="_on_dialog_btn_close_button_down"]
+[connection signal="toggled" from="SettingsPopup/MusicCheckBox" to="." method="_on_music_check_box_toggled"]

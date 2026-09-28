@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://dfkkd8a2em5"]
+
+[ext_resource type="Script" uid="uid://bj2m581fkvskh" path="res://scenes/main_scene.gd" id="1_w2twt"]
+
+[node name="MainScene" type="Node2D" unique_id=1217946177]
+script = ExtResource("1_w2twt")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
+limit_left = 0
+limit_top = 0
+limit_right = 512
+limit_bottom = 448
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=95744337]
+offset_right = 512.0
+offset_bottom = 448.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=2006844351]
+handle_input_locally = false
+size = Vector2i(512, 448)
+render_target_update_mode = 4
+
+[node name="GameMap" type="ColorRect" parent="SubViewportContainer/SubViewport" unique_id=1073236085]
+offset_right = 448.0
+offset_bottom = 448.0
+color = Color(0, 0, 0, 1)
+
+[node name="InfoSidebar" type="ColorRect" parent="SubViewportContainer/SubViewport" unique_id=1007272814]
+offset_left = 448.0
+offset_right = 512.0
+offset_bottom = 448.0
+color = Color(0.26657522, 0.2665752, 0.2665752, 1)
