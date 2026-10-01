@@ -1,3 +1,4 @@
+@tool
 extends Node2D
 
 @export
@@ -18,6 +19,7 @@ var _game_difficult_checkbox: CheckBox
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	set_process_input(true)
+	_settings_popup.visible = false
 	_music_checkbox.set_pressed_no_signal(\
 		GameGlobals.get_music_available())
 	var global_game_level = GameGlobals.get_game_level()
@@ -40,15 +42,21 @@ func _process(_delta: float) -> void:
 func _on_settings_button_click() -> void:
 	_settings_popup.show()
 
-func _on_dialog_btn_close_button_down() -> void:
+func _on_start_game_button_click() -> void:
+	get_tree().change_scene_to_file("res://scenes/main_scene.tscn")
+
+func _on_dialog_close_button_click() -> void:
 	_settings_popup.hide()
 
 func _on_music_check_box_toggled(toggled_on: bool) -> void:
 	GameGlobals.set_music_available(toggled_on)
 	print('音乐播放状态：', '打开' if(toggled_on) else '关闭')
-	
+
+# 响应游戏难易选择的Checkbox的事件
 func _on_toggle_game_level(toggled_on: bool, target: GameEnums.GameLevel) -> void:
-	if(toggled_on): _toggle_game_level(target, false)
+	if(not toggled_on): return
+	_toggle_game_level(target, false)
+	print('你已选择了游戏难度：{0}'.format([GameEnums.get_game_level_descript(target)]))
 
 # 切换游戏难度
 func _toggle_game_level(target: GameEnums.GameLevel, no_signal: bool = false) -> void:
@@ -70,7 +78,3 @@ func _toggle_game_level(target: GameEnums.GameLevel, no_signal: bool = false) ->
 		if not no_signal:
 			_game_difficult_checkbox.set_pressed_no_signal(true)
 		else: _game_difficult_checkbox.button_pressed = true
-
-# 切换到主场景
-func _change_to_main_scene() -> void:
-	get_tree().change_scene_to_file("res://scenes/main_scene.tscn")

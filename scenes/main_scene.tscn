@@ -1,9 +1,41 @@
 [gd_scene format=3 uid="uid://dfkkd8a2em5"]
 
 [ext_resource type="Script" uid="uid://bj2m581fkvskh" path="res://scenes/main_scene.gd" id="1_w2twt"]
+[ext_resource type="Texture2D" uid="uid://bsesin4e370x1" path="res://assets/textures/enemy_tag.tres" id="2_pw63i"]
+[ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
+[ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/number_text.gd" id="4_pu3yx"]
+[ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
+[ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
+[ext_resource type="Texture2D" uid="uid://bvrgstb8uuham" path="res://assets/textures/num_2.tres" id="7_01n6w"]
+[ext_resource type="Texture2D" uid="uid://f4d7767007tx" path="res://assets/textures/num_3.tres" id="8_6u1mn"]
+[ext_resource type="Texture2D" uid="uid://cnchjcijqsnqq" path="res://assets/textures/num_4.tres" id="9_bcnxi"]
+[ext_resource type="Texture2D" uid="uid://clufpgeai735q" path="res://assets/textures/num_5.tres" id="10_7nt27"]
+[ext_resource type="Texture2D" uid="uid://b0leymi1h5r6u" path="res://assets/textures/num_6.tres" id="11_k6f3i"]
+[ext_resource type="Texture2D" uid="uid://dqjgggajvhtd3" path="res://assets/textures/num_7.tres" id="12_xdqt8"]
+[ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
+[ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
 
-[node name="MainScene" type="Node2D" unique_id=1217946177]
+[sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(60, 113, 31.5, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r6p65"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(0, 112, 30, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_si52b"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(31, 112.5, 28, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_01n6w"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(384, 64, 62, 30)
+
+[node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_game_over_tag", "_enemy_grid_container")]
 script = ExtResource("1_w2twt")
+_game_over_tag = NodePath("GameOver")
+_enemy_tag_atlas = ExtResource("2_pw63i")
+_enemy_grid_container = NodePath("InfoSidebar/EnemyGridContainer")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
 limit_left = 0
@@ -11,22 +43,87 @@ limit_top = 0
 limit_right = 512
 limit_bottom = 448
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=95744337]
-offset_right = 512.0
-offset_bottom = 448.0
-
-[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=2006844351]
-handle_input_locally = false
-size = Vector2i(512, 448)
-render_target_update_mode = 4
-
-[node name="GameMap" type="ColorRect" parent="SubViewportContainer/SubViewport" unique_id=1073236085]
+[node name="GameMap" type="ColorRect" parent="." unique_id=1073236085]
 offset_right = 448.0
 offset_bottom = 448.0
 color = Color(0, 0, 0, 1)
 
-[node name="InfoSidebar" type="ColorRect" parent="SubViewportContainer/SubViewport" unique_id=1007272814]
+[node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0
 offset_right = 512.0
 offset_bottom = 448.0
-color = Color(0.26657522, 0.2665752, 0.2665752, 1)
+color = Color(0.49411765, 0.49411765, 0.49411765, 1)
+
+[node name="EnemyGridContainer" type="GridContainer" parent="InfoSidebar" unique_id=310131170]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 52.0
+offset_bottom = 231.0
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="StageFlag" type="TextureRect" parent="InfoSidebar" unique_id=884689062]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 397.0
+offset_right = 51.0
+offset_bottom = 437.0
+texture = SubResource("AtlasTexture_pw63i")
+
+[node name="StageLevel" type="Control" parent="InfoSidebar/StageFlag" unique_id=1243262893]
+custom_minimum_size = Vector2(12, 13)
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 23.0
+offset_right = 47.0
+offset_bottom = 41.0
+script = ExtResource("4_pu3yx")
+align = 2
+num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
+_number = 1
+metadata/_custom_type_script = "uid://dywn341o8erji"
+
+[node name="PlayerLifeTag" type="TextureRect" parent="InfoSidebar" unique_id=1085266646]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 293.0
+offset_right = 51.0
+offset_bottom = 333.0
+texture = SubResource("AtlasTexture_r6p65")
+
+[node name="PlayerLifes" type="Control" parent="InfoSidebar/PlayerLifeTag" unique_id=1108112189]
+custom_minimum_size = Vector2(14, 13)
+anchors_preset = 0
+offset_left = 22.0
+offset_top = 21.0
+offset_right = 62.0
+offset_bottom = 37.0
+script = ExtResource("4_pu3yx")
+num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
+metadata/_custom_type_script = "uid://dywn341o8erji"
+
+[node name="TextureRect" type="TextureRect" parent="InfoSidebar" unique_id=534185155]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 344.0
+offset_right = 51.0
+offset_bottom = 384.0
+texture = SubResource("AtlasTexture_si52b")
+
+[node name="Player2Lifes" type="Control" parent="InfoSidebar/TextureRect" unique_id=256545995]
+custom_minimum_size = Vector2(14, 13)
+anchors_preset = 0
+offset_left = 23.0
+offset_top = 21.0
+offset_right = 63.0
+offset_bottom = 37.0
+script = ExtResource("4_pu3yx")
+num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
+metadata/_custom_type_script = "uid://dywn341o8erji"
+
+[node name="GameOver" type="Sprite2D" parent="." unique_id=1277183493]
+visible = false
+position = Vector2(241, 470)
+texture = SubResource("AtlasTexture_01n6w")

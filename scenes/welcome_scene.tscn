@@ -4,7 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://bqjqd1lsqyr2y" path="res://assets/textures/menu.png" id="2_56v1d"]
 [ext_resource type="Texture2D" uid="uid://5bq46o3i2adv" path="res://assets/textures/welcome_tank.tres" id="3_r043e"]
 [ext_resource type="Shader" uid="uid://c0ueyitakmns2" path="res://assets/shader/shader_white.gdshader" id="4_i3k6d"]
-[ext_resource type="Texture2D" uid="uid://bweeniirou3q8" path="res://assets/textures/ui-design.png" id="5_qhx7g"]
+[ext_resource type="Texture2D" uid="uid://btkrf7nyg677r" path="res://assets/textures/ui-design.png" id="5_qhx7g"]
+[ext_resource type="PackedScene" uid="uid://bsxcciq87ssj7" path="res://scenes/stage_scene.tscn" id="6_qhx7g"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_56v1d"]
 shader = ExtResource("4_i3k6d")
@@ -12,6 +13,13 @@ shader = ExtResource("4_i3k6d")
 [sub_resource type="AtlasTexture" id="AtlasTexture_r043e"]
 atlas = ExtResource("5_qhx7g")
 region = Rect2(67, 50, 26, 13)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b071u"]
+shader = ExtResource("4_i3k6d")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b071u"]
+atlas = ExtResource("5_qhx7g")
+region = Rect2(0, 96, 64, 16)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qhx7g"]
 bg_color = Color(0.6, 0.6, 0.6, 0.85490197)
@@ -102,7 +110,7 @@ limit_smoothed = true
 [node name="Background" type="ColorRect" parent="." unique_id=1935140939]
 offset_right = 512.0
 offset_bottom = 448.0
-color = Color(0.25882354, 0.25882354, 0.25882354, 1)
+color = Color(0, 0, 0, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="Background" unique_id=341781490]
 layout_mode = 0
@@ -130,6 +138,16 @@ offset_top = 31.0
 offset_right = 427.0
 offset_bottom = 49.0
 texture_normal = SubResource("AtlasTexture_r043e")
+stretch_mode = 4
+
+[node name="StartGameButton" type="TextureButton" parent="Background" unique_id=1628235651]
+material = SubResource("ShaderMaterial_b071u")
+layout_mode = 0
+offset_left = 180.0
+offset_top = 369.0
+offset_right = 316.0
+offset_bottom = 405.0
+texture_normal = SubResource("AtlasTexture_b071u")
 stretch_mode = 4
 
 [node name="SettingsPopup" type="Popup" parent="." unique_id=500452069]
@@ -177,9 +195,9 @@ position = Vector2(337, 249)
 texture = SubResource("AtlasTexture_qhx7g")
 
 [node name="DialogBtnClose" type="TextureButton" parent="SettingsPopup" unique_id=357685746]
-offset_left = 228.0
+offset_left = 229.0
 offset_top = 295.0
-offset_right = 280.0
+offset_right = 281.0
 offset_bottom = 322.0
 texture_normal = SubResource("AtlasTexture_5fdnp")
 stretch_mode = 4
@@ -216,6 +234,15 @@ offset_bottom = 262.0
 theme_override_icons/checked = SubResource("AtlasTexture_vfda3")
 theme_override_icons/unchecked = SubResource("AtlasTexture_08ct4")
 
+[node name="StagePopup" type="Popup" parent="." unique_id=819266269]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(512, 448)
+max_size = Vector2i(512, 448)
+
+[node name="StageScene" parent="StagePopup" unique_id=2120215451 instance=ExtResource("6_qhx7g")]
+
 [connection signal="button_up" from="Background/SettingsButton" to="." method="_on_settings_button_click"]
-[connection signal="button_down" from="SettingsPopup/DialogBtnClose" to="." method="_on_dialog_btn_close_button_down"]
+[connection signal="button_down" from="Background/StartGameButton" to="." method="_on_start_game_button_click"]
+[connection signal="button_down" from="SettingsPopup/DialogBtnClose" to="." method="_on_dialog_close_button_click"]
 [connection signal="toggled" from="SettingsPopup/MusicCheckBox" to="." method="_on_music_check_box_toggled"]
