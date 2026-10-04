@@ -217,6 +217,7 @@ offset_right = 273.0
 offset_bottom = 262.0
 theme_override_icons/checked = SubResource("AtlasTexture_b1nxc")
 theme_override_icons/unchecked = SubResource("AtlasTexture_5hhb8")
+button_pressed = true
 
 [node name="GameNormalCheckBox" type="CheckBox" parent="SettingsPopup" unique_id=71418728]
 offset_left = 300.0

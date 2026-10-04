@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://nim2x46gq3v6"]
+
+[ext_resource type="Script" uid="uid://qlxe7748l7x7" path="res://components/base_tank.gd" id="1_nt8j8"]
+[ext_resource type="Texture2D" uid="uid://cniag7n1vd8tm" path="res://assets/textures/tank_player/tank_player_up.tres" id="2_0nxwf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0nxwf"]
+size = Vector2(26, 26)
+
+[node name="BaseTank" type="CharacterBody2D" unique_id=535548167 node_paths=PackedStringArray("_tank_sprite", "_tank_pivot", "_collision_shape")]
+position = Vector2(0, 3.3064713)
+collision_layer = 0
+platform_floor_layers = 4294967294
+platform_wall_layers = 1
+script = ExtResource("1_nt8j8")
+_tank_sprite = NodePath("Pivot/Sprite2D")
+_tank_pivot = NodePath("Pivot")
+_collision_shape = NodePath("CollisionShape2D")
+
+[node name="Pivot" type="Node2D" parent="." unique_id=2032091983]
+position = Vector2(-13, -13)
+
+[node name="Sprite2D" type="Sprite2D" parent="Pivot" unique_id=914298062]
+texture = ExtResource("2_0nxwf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1041880898]
+position = Vector2(-13, -13)
+shape = SubResource("RectangleShape2D_0nxwf")

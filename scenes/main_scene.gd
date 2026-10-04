@@ -1,6 +1,10 @@
 @tool
 extends Node2D
 
+# 地图容器
+@export
+var _map_container: ColorRect
+
 # 游戏结束的标记精灵
 @export
 var _game_over_tag: Sprite2D
@@ -13,6 +17,20 @@ var _enemy_tag_atlas: AtlasTexture
 @export
 var _enemy_grid_container: GridContainer
 
+# 关卡组件
+@export
+var _stage_level: NumberText
+
+# 玩家生命组件
+@export
+var _player_lifes: NumberText
+
+@export
+var _map_tile_packed_scene: PackedScene
+
+@export
+var _player_tank_packed_scene: PackedScene
+
 func _ready() -> void:
 	_initialize() #初始化方法
 
@@ -21,11 +39,52 @@ func _enter_tree() -> void:
 
 # 初始化方法
 func _initialize() -> void:
+	_stage_level.set_number(\
+		1 if Engine.is_editor_hint() else GameGlobals.get_stage_level())
+	_player_lifes.set_number( \
+		3 if Engine.is_editor_hint() else GameGlobals.get_player_life_count())
 	_generate_enemy_grids() #生成敌方表格数据
-	get_tree().create_timer(3.0).timeout.connect(func(): _show_game_over_tag())
+	if not Engine.is_editor_hint():
+		_game_over_tag.visible = false #设置默认不可见
+	_game_over_tag.position.x = GameGlobals.GAME_MAP_CONTAINER_SIZE.x / 2.0
+	_load_map_tiles(_stage_level.get_number()) #加载地图数据
+	_generate_player_tank() #生成玩家坦克
 
 func _process(_delta: float) -> void:
 	pass
+
+func _draw() -> void:
+	var visible_rect = get_viewport_rect()
+	draw_rect(visible_rect, Color("#7e7e7e"))
+
+# 加载地图数据
+func _load_map_tiles(stage: int) -> void:
+	var map_data_result = GameGlobals.get_map_data(stage)
+	if map_data_result.success:
+		var map_data = map_data_result.value
+		_layout_map_tiles(map_data)
+	else: print('地图数据加载失败!!!')
+
+# 排版地图地砖精灵
+func _layout_map_tiles(map_data: Array) -> void:
+	for child in _map_container.get_children():
+		child.queue_free()
+	for row in map_data.size():
+		for column in map_data[row].size():
+			var dat = map_data[row][column] as int
+			if dat not in GameEnums.all_map_tile_types:
+				continue
+			var type = GameEnums.all_map_tile_types \
+				.filter(func(t): return t == dat)[0] \
+					as GameEnums.MapTileType
+			var map_tile = _map_tile_packed_scene \
+				.instantiate() as MapTile
+			map_tile.set_map_title_type(type)
+			map_tile.position = Vector2( \
+				column * GameGlobals.GAME_MAP_TILE_SIZE, \
+				row * GameGlobals.GAME_MAP_TILE_SIZE)
+			map_tile.set_render_index(0)
+			_map_container.add_child(map_tile)
 
 # 生成敌方表格数据
 func _generate_enemy_grids() -> void:
@@ -59,4 +118,14 @@ func _show_game_over_flinker_effect() -> void:
 	tween.finished.connect(func(): pass)
 	tween.tween_property(_game_over_tag, "modulate:a", 0, 0.5)
 	tween.tween_property(_game_over_tag, "modulate:a", 1.0, 0.5)
-	
+
+# 生成玩家坦克
+func _generate_player_tank() -> void:
+	var player_tank = \
+		_player_tank_packed_scene.instantiate() as BaseTank
+	player_tank.z_index = 2
+	player_tank.set_tank_type( \
+		GameEnums.TankType.player)
+	player_tank.set_render_index(100)
+	player_tank.position = Vector2(50, 100)
+	_map_container.add_child(player_tank)

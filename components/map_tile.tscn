@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cwrs2bs5acbww"]
+
+[ext_resource type="Script" uid="uid://d0yuatadufu3x" path="res://components/map_tile.gd" id="1_dif2y"]
+[ext_resource type="Texture2D" uid="uid://ba8kw64nqbg2b" path="res://assets/textures/map_tile_mud_wall.tres" id="2_synv0"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_si52b"]
+rough = true
+absorbent = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_synv0"]
+size = Vector2(16, 16)
+
+[node name="MapTile" type="StaticBody2D" unique_id=1403485562 node_paths=PackedStringArray("_collision_shape")]
+z_index = 4096
+physics_material_override = SubResource("PhysicsMaterial_si52b")
+script = ExtResource("1_dif2y")
+_collision_shape = NodePath("CollisionShape2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=65353653]
+z_index = 4096
+texture = ExtResource("2_synv0")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=178070397]
+position = Vector2(8, 8)
+shape = SubResource("RectangleShape2D_synv0")

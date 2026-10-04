@@ -18,7 +18,6 @@ var _game_difficult_checkbox: CheckBox
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	set_process_input(true)
 	_settings_popup.visible = false
 	_music_checkbox.set_pressed_no_signal(\
 		GameGlobals.get_music_available())
@@ -35,10 +34,13 @@ func _ready() -> void:
 	_game_difficult_checkbox.toggled\
 		.connect(func(on): _on_toggle_game_level(on, GameEnums.GameLevel.difficult))
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass
 
+func _physics_process(_delta: float) -> void:
+	if Input.is_action_just_pressed('ui_accept'):
+		_on_start_game_button_click()
+		
 func _on_settings_button_click() -> void:
 	_settings_popup.show()
 

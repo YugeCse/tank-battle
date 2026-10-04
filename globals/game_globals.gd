@@ -1,6 +1,9 @@
 @tool
 extends Node
 
+# 游戏地砖大小：16
+const GAME_MAP_TILE_SIZE = 16
+
 # 游戏画布的尺寸: 512x448
 const GAME_CANVS_SIZE = Vector2(512, 448)
 
@@ -16,6 +19,9 @@ const DEFAULT_ENEMY_TOTAL_COUNT = 20
 # 游戏默认玩家生命总数：3
 const DEFAULT_PLAYER_LIFE_COUNT = 3
 
+# 当前关卡
+var _stage_level: int = 1
+
 # 玩家总生命数
 var _player_life_count: int = 3
 
@@ -28,12 +34,30 @@ var _music_available: bool = false
 # 当前选择的游戏难度
 var _game_level: GameEnums.GameLevel = GameEnums.GameLevel.easy
 
+# 地图图块数据集合
+@onready
+var _map_tile_atlas_texture: Dictionary[GameEnums.MapTileType, AtlasTexture] = {
+	GameEnums.MapTileType.mud_wall: preload("res://assets/textures/map_tile_mud_wall.tres"),
+	GameEnums.MapTileType.steel_wall: preload("res://assets/textures/map_tile_steel_wall.tres"),
+	GameEnums.MapTileType.grass: preload("res://assets/textures/map_tile_grass.tres"),
+	GameEnums.MapTileType.river: preload("res://assets/textures/map_tile_grass.tres"),
+	GameEnums.MapTileType.ice: preload("res://assets/textures/map_tile_ice.tres"),
+	GameEnums.MapTileType.home: preload("res://assets/textures/map_tile_player_home.tres")
+}
+
 func _ready() -> void:
 	_player_life_count = DEFAULT_PLAYER_LIFE_COUNT
 	_enemy_total_count = DEFAULT_ENEMY_TOTAL_COUNT
 
 func _process(_delta: float) -> void:
 	pass
+
+# 设置当前的关卡
+func set_stage_level(stage: int) -> void:
+	_stage_level = stage
+
+# 获取当前的关卡
+func get_stage_level() -> int: return _stage_level
 
 # 设置玩家生命数
 func set_player_life_count(count: int) -> void:
@@ -66,3 +90,18 @@ func set_game_level(target: GameEnums.GameLevel) -> void:
 
 # 获取游戏难度
 func get_game_level() -> GameEnums.GameLevel: return _game_level
+
+# 根据地块类型，获取对应的资源
+func get_map_tile_atlas_texture(type: GameEnums.MapTileType) -> AtlasTexture:
+	return _map_tile_atlas_texture[type] as AtlasTexture
+
+# 获取地图数据
+func get_map_data(stage: int) -> DataResult:
+	var fa = FileAccess.open( \
+		"res://assets/stages/map{0}.json".format([stage]), \
+		FileAccess.READ)
+	if not fa:
+		return DataResult.fail("cannot fetch map data")
+	var map_json_data = fa.get_as_text()
+	fa.close()
+	return DataResult.ok(JSON.parse_string(map_json_data))
