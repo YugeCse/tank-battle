@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://nim2x46gq3v6"]
+
+[ext_resource type="Script" uid="uid://icpo4cafkc6v" path="res://components/tank.gd" id="1_d5xny"]
+[ext_resource type="Texture2D" uid="uid://cniag7n1vd8tm" path="res://assets/textures/tank_player/tank_player_up.tres" id="2_0nxwf"]
+[ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_yfpnr"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qxjua"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(160, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fyxet"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(160, 128, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xohu8"]
+animations = [{
+"frames": [],
+"loop": 1,
+"name": &"boom",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": 1,
+"name": &"born",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qxjua")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fyxet")
+}],
+"loop": 1,
+"name": &"protect",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0nxwf"]
+size = Vector2(26, 26)
+
+[node name="Tank" type="CharacterBody2D" unique_id=1256696617 node_paths=PackedStringArray("_tank_sprite", "_tank_pivot", "_collision_shape", "_animated_sprite")]
+script = ExtResource("1_d5xny")
+_tank_sprite = NodePath("Pivot/Sprite2D")
+_tank_pivot = NodePath("CollisionShape2D")
+_collision_shape = NodePath("CollisionShape2D")
+_animated_sprite = NodePath("Pivot/AnimatedSprite2D")
+
+[node name="Pivot" type="Node2D" parent="." unique_id=1906880095]
+position = Vector2(-13, -13)
+
+[node name="Sprite2D" type="Sprite2D" parent="Pivot" unique_id=1812382232]
+texture = ExtResource("2_0nxwf")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Pivot" unique_id=1006208577]
+visible = false
+z_index = 1000
+sprite_frames = SubResource("SpriteFrames_xohu8")
+animation = &"protect"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1397192951]
+position = Vector2(-13, -13)
+shape = SubResource("RectangleShape2D_0nxwf")

@@ -121,11 +121,10 @@ func _show_game_over_flinker_effect() -> void:
 
 # 生成玩家坦克
 func _generate_player_tank() -> void:
-	var player_tank = \
-		_player_tank_packed_scene.instantiate() as BaseTank
-	player_tank.z_index = 2
-	player_tank.set_tank_type( \
-		GameEnums.TankType.player)
+	var player_tank = Tank.create( \
+		GameEnums.TankType.enemy4, \
+		Vector2(50, 100))
+	player_tank.allow_control = true
 	player_tank.set_render_index(100)
-	player_tank.position = Vector2(50, 100)
+	player_tank.set_capabilities([CapabilityProperty.ProtectClothes.new()])
 	_map_container.add_child(player_tank)

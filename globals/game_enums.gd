@@ -57,7 +57,8 @@ enum TankType {
 	enemy,
 	enemy1,
 	enemy2,
-	enemy3
+	enemy3,
+	enemy4
 }
 
 # 获取所有的坦克类型集合

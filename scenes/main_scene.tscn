@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bsesin4e370x1" path="res://assets/textures/enemy_tag.tres" id="2_pw63i"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
 [ext_resource type="PackedScene" uid="uid://cwrs2bs5acbww" path="res://components/map_tile.tscn" id="3_si52b"]
-[ext_resource type="PackedScene" uid="uid://nim2x46gq3v6" path="res://components/base_tank.tscn" id="4_01n6w"]
+[ext_resource type="Texture2D" uid="uid://cniag7n1vd8tm" path="res://assets/textures/tank_player/tank_player_up.tres" id="4_01n6w"]
 [ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/number_text.gd" id="4_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
 [ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
@@ -17,17 +17,200 @@
 [ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
 [ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
-size = Vector2(16, 446)
+[sub_resource type="GDScript" id="GDScript_6u1mn"]
+script/source = "@tool
+extends CharacterBody2D
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xohu8"]
-size = Vector2(16, 448)
+# 移动速度
+@export
+var speed: float = 100.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_okxoa"]
-size = Vector2(448, 16)
+# 坦克类型
+@export
+var _tank_type: GameEnums.TankType
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_q2oxf"]
-size = Vector2(446, 16)
+# 朝向变量
+@export
+var _facing_dir: Vector2 = Vector2.UP
+
+@export
+var _tank_sprite: Sprite2D
+
+@export
+var _tank_pivot: Node2D
+
+@export
+var _collision_shape: CollisionShape2D
+
+@export
+var _tank_atlas_textures: Dictionary[String, AtlasTexture]
+
+func _ready() -> void:
+	set_tank_type(_tank_type)
+	if _tank_type == GameEnums.TankType.player:
+		set_collision_layer_value(CollisionLayers.layer_player_tank, true)
+	else: set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
+
+func _process(delta: float) -> void:
+	var target_dir = Vector2.ZERO
+	if Input.is_action_pressed('ui_left'):
+		target_dir = Vector2.LEFT
+	elif Input.is_action_pressed('ui_right'):
+		target_dir = Vector2.RIGHT
+	elif Input.is_action_pressed('ui_up'):
+		target_dir = Vector2.UP
+	elif Input.is_action_pressed('ui_down'):
+		target_dir = Vector2.DOWN
+	set_facing_dir(target_dir)
+	var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
+	if not collide or not collide.get_collider(): return
+
+# 设置渲染层级
+func set_render_index(index: int) -> void:
+	_tank_sprite.z_index = index
+
+# 设置坦克类型
+func set_tank_type(type: GameEnums.TankType) -> void:
+	_tank_type = type
+	set_facing_dir(_facing_dir)
+	var shape = RectangleShape2D.new()
+	shape.size = _tank_sprite.texture.get_size()
+	_collision_shape.shape = shape
+	var offset = shape.size / 2.0
+	_tank_pivot.position = - offset
+	_collision_shape.position = - offset
+
+# 获取坦克类型
+func get_tank_type() -> GameEnums.TankType: return _tank_type
+
+# 转换不标准的方向到标准方向
+func _convert_dir_to_direction(dir: Vector2) -> String:
+	if dir == Vector2.ZERO: return \"\"
+	if dir == Vector2.LEFT: return \"left\"
+	elif dir == Vector2.RIGHT: return \"right\"
+	elif dir == Vector2.UP: return \"up\"
+	elif dir == Vector2.DOWN: return \"down\"
+	else: return \"\"
+
+# 设置朝向
+func set_facing_dir(dir: Vector2) -> void:
+	if dir == Vector2.ZERO: return
+	_facing_dir = dir # 更新当前的朝向数据
+	var dir_name = _convert_dir_to_direction(dir)
+	if dir_name == \"\": return
+	_tank_sprite.texture = _tank_atlas_textures[dir_name]
+
+# 获取朝向数据
+func get_facing_dir() -> Vector2: return _facing_dir
+
+# 更新精灵
+func update_sprite( \\
+	new_textures: Dictionary[String, AtlasTexture]) -> void:
+	_tank_atlas_textures = new_textures
+	var dir_name = _convert_dir_to_direction(_facing_dir)
+	if dir_name == \"\": return
+	_tank_sprite.texture = _tank_atlas_textures[dir_name]
+
+# 显示被保护的状态
+func show_protected_effect() -> void:
+	pass
+
+# 显示闪烁状态
+func show_flink_effect() -> void:
+	pass
+
+# 显示红色闪烁状态
+func show_red_flink_effect() -> void:
+	pass
+
+# 显示爆炸销毁状态
+func show_explode_destroy_effect() -> void:
+	pass
+
+# 创建一个实例
+static func create( \\
+	type: GameEnums.TankType, \\
+	location: Vector2 \\
+) -> Tank:
+	var instance = \\
+		(load(\"res://components/tank.tscn\") \\
+		as PackedScene).instantiate() as Tank
+	instance.position = location
+	instance.update_sprite(get_tank_atlas_textures(type))
+	instance.set_tank_type(type) #设置坦克类型
+	return instance
+
+# 获取玩家的 texture 资源
+static func get_tank_atlas_textures(type: GameEnums.TankType) -> Dictionary[String, AtlasTexture]:
+	var dic: Dictionary[String, AtlasTexture] = {}
+	var dirs = ['left', 'right', 'up', 'down']
+	for dir in dirs:
+		if type == GameEnums.TankType.player:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_player/tank_player_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+		elif type == GameEnums.TankType.enemy:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_enemies/tank_enemy0_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+		elif type == GameEnums.TankType.enemy1:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_enemies/tank_enemy1_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+		elif type == GameEnums.TankType.enemy2:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_enemies/tank_enemy2_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+		elif type == GameEnums.TankType.enemy3:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_enemies/tank_enemy3_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+		elif type == GameEnums.TankType.enemy4:
+			dic[dir] = load( \\
+				\"res://assets/textures/tank_enemies/tank_enemy4_{0}.tres\" \\
+				.format([dir])) as AtlasTexture
+	return dic
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kv3vt"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(160, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3s3mx"]
+atlas = ExtResource("3_7ykc4")
+region = Rect2(160, 128, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_85042"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kv3vt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3s3mx")
+}],
+"loop": 1,
+"name": &"Protect",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qk3fb"]
+size = Vector2(26, 26)
+
+[sub_resource type="PackedScene" id="PackedScene_bcnxi"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"id_paths": [],
+"names": PackedStringArray("BaseTank", "position", "collision_layer", "platform_floor_layers", "platform_wall_layers", "script", "_tank_sprite", "_tank_pivot", "_collision_shape", "CharacterBody2D", "Pivot", "Node2D", "Sprite2D", "texture", "ProtectClothse", "z_index", "sprite_frames", "animation", "autoplay", "offset", "AnimatedSprite2D", "CollisionShape2D", "shape"),
+"node_count": 5,
+"node_ids": PackedInt32Array(535548167, 2032091983, 914298062, 676033776, 1041880898),
+"node_paths": [],
+"nodes": PackedInt32Array(-1, -1, 9, 0, -1, 8, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 1073741830, 5, 1073741831, 6, 1073741832, 7, 0, 0, 0, 11, 10, -1, 1, 1, 8, 0, 1, 0, 12, 12, -1, 1, 13, 9, 0, 1, 0, 20, 14, -1, 6, 15, 10, 1, 11, 16, 12, 17, 13, 18, 14, 19, 8, 0, 0, 0, 21, 21, -1, 2, 1, 8, 22, 15, 0),
+"variants": [Vector2(0, -19.631176), 2, 4294967294, 1, SubResource("GDScript_6u1mn"), NodePath("Pivot/Sprite2D"), NodePath("Pivot"), NodePath("CollisionShape2D"), Vector2(-13, -13), ExtResource("4_01n6w"), 1000, Vector2(13, 13), SubResource("SpriteFrames_85042"), &"Protect", "Protect", SubResource("RectangleShape2D_qk3fb")],
+"version": 3
+}
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
 atlas = ExtResource("3_7ykc4")
@@ -40,6 +223,18 @@ region = Rect2(0, 112, 30, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_si52b"]
 atlas = ExtResource("3_7ykc4")
 region = Rect2(31, 112.5, 28, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
+size = Vector2(16, 446)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xohu8"]
+size = Vector2(16, 448)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_okxoa"]
+size = Vector2(448, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q2oxf"]
+size = Vector2(446, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_01n6w"]
 atlas = ExtResource("3_7ykc4")
@@ -54,50 +249,13 @@ _enemy_grid_container = NodePath("InfoSidebar/EnemyGridContainer")
 _stage_level = NodePath("InfoSidebar/StageFlag/StageLevel")
 _player_lifes = NodePath("InfoSidebar/PlayerLifeTag/PlayerLifes")
 _map_tile_packed_scene = ExtResource("3_si52b")
-_player_tank_packed_scene = ExtResource("4_01n6w")
+_player_tank_packed_scene = SubResource("PackedScene_bcnxi")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
 limit_left = 0
 limit_top = 0
 limit_right = 512
 limit_bottom = 448
-
-[node name="MapContaner" type="ColorRect" parent="." unique_id=931783397]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 432.0
-offset_bottom = 432.0
-color = Color(0, 0, 0, 1)
-
-[node name="WorldBoundaries" type="Node2D" parent="." unique_id=1006000778]
-
-[node name="Left" type="StaticBody2D" parent="WorldBoundaries" unique_id=230713872]
-position = Vector2(8, 224)
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Left" unique_id=1966607311]
-shape = SubResource("RectangleShape2D_85042")
-
-[node name="Right" type="StaticBody2D" parent="WorldBoundaries" unique_id=1169248951]
-position = Vector2(440, 224)
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Right" unique_id=79012519]
-shape = SubResource("RectangleShape2D_xohu8")
-
-[node name="Top" type="StaticBody2D" parent="WorldBoundaries" unique_id=1922485518]
-position = Vector2(224, 8)
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Top" unique_id=1198432495]
-shape = SubResource("RectangleShape2D_okxoa")
-
-[node name="Bottom" type="StaticBody2D" parent="WorldBoundaries" unique_id=952563477]
-position = Vector2(224, 440)
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Bottom" unique_id=2054408472]
-shape = SubResource("RectangleShape2D_q2oxf")
 
 [node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0
@@ -180,6 +338,43 @@ layout_mode = 0
 offset_right = 1.0
 offset_bottom = 448.0
 color = Color(0.4392157, 0.4392157, 0.4392157, 1)
+
+[node name="MapContaner" type="ColorRect" parent="." unique_id=931783397]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 432.0
+offset_bottom = 432.0
+color = Color(0, 0, 0, 1)
+
+[node name="WorldBoundaries" type="Node2D" parent="." unique_id=1006000778]
+
+[node name="Left" type="StaticBody2D" parent="WorldBoundaries" unique_id=230713872]
+position = Vector2(8, 224)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Left" unique_id=1966607311]
+shape = SubResource("RectangleShape2D_85042")
+
+[node name="Right" type="StaticBody2D" parent="WorldBoundaries" unique_id=1169248951]
+position = Vector2(440, 224)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Right" unique_id=79012519]
+shape = SubResource("RectangleShape2D_xohu8")
+
+[node name="Top" type="StaticBody2D" parent="WorldBoundaries" unique_id=1922485518]
+position = Vector2(224, 8)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Top" unique_id=1198432495]
+shape = SubResource("RectangleShape2D_okxoa")
+
+[node name="Bottom" type="StaticBody2D" parent="WorldBoundaries" unique_id=952563477]
+position = Vector2(224, 440)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Bottom" unique_id=2054408472]
+shape = SubResource("RectangleShape2D_q2oxf")
 
 [node name="GameOver" type="Sprite2D" parent="." unique_id=1277183493]
 visible = false
