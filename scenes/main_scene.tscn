@@ -17,6 +17,18 @@
 [ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
 [ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
+size = Vector2(16, 446)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xohu8"]
+size = Vector2(16, 448)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_okxoa"]
+size = Vector2(448, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q2oxf"]
+size = Vector2(446, 16)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
 atlas = ExtResource("3_7ykc4")
 region = Rect2(60, 113, 31.5, 30)
@@ -56,6 +68,36 @@ offset_top = 16.0
 offset_right = 432.0
 offset_bottom = 432.0
 color = Color(0, 0, 0, 1)
+
+[node name="WorldBoundaries" type="Node2D" parent="." unique_id=1006000778]
+
+[node name="Left" type="StaticBody2D" parent="WorldBoundaries" unique_id=230713872]
+position = Vector2(8, 224)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Left" unique_id=1966607311]
+shape = SubResource("RectangleShape2D_85042")
+
+[node name="Right" type="StaticBody2D" parent="WorldBoundaries" unique_id=1169248951]
+position = Vector2(440, 224)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Right" unique_id=79012519]
+shape = SubResource("RectangleShape2D_xohu8")
+
+[node name="Top" type="StaticBody2D" parent="WorldBoundaries" unique_id=1922485518]
+position = Vector2(224, 8)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Top" unique_id=1198432495]
+shape = SubResource("RectangleShape2D_okxoa")
+
+[node name="Bottom" type="StaticBody2D" parent="WorldBoundaries" unique_id=952563477]
+position = Vector2(224, 440)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Bottom" unique_id=2054408472]
+shape = SubResource("RectangleShape2D_q2oxf")
 
 [node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0
