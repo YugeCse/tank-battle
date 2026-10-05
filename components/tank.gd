@@ -3,47 +3,51 @@ extends CharacterBody2D
 
 class_name Tank
 
-# 是否允许被控制
+## 是否允许被控制
 @export
 var allow_control: bool
 
-# 移动速度
+## 移动速度
 @export
 var speed: float = 100.0
 
-# 坦克类型
+## 坦克类型
 @export
 var _tank_type: GameEnums.TankType
 
-# 朝向变量
+## 朝向变量
 @export
 var _facing_dir: Vector2 = Vector2.UP
 
-# 能力容器
+## 能力容器
 var _capabilities: Array[CapabilityProperty] = []
 
+## 坦克精灵
 @export
 var _tank_sprite: Sprite2D
 
+## 坦克精灵旋转节点
 @export
 var _tank_pivot: Node2D
 
+## 坦克精灵碰撞形状
 @export
 var _collision_shape: CollisionShape2D
 
-# 动画精灵,用于展示一些效果
+## 动画精灵,用于展示一些效果
 @export
 var _animated_sprite: AnimatedSprite2D
 
-# 保护衣特效的定时器
+## 保护衣特效的定时器
 var _protect_effect_timer: Timer
 
-# 闪烁动画
+## 闪烁动画对象
 var _flicker_tween: Tween
 
-# 红色闪烁动画
+## 红色闪烁动画对象
 var _red_flicker_tween: Tween
 
+## 坦克资源数据合集
 @export
 var _tank_atlas_textures: Dictionary[String, AtlasTexture]
 
@@ -69,6 +73,8 @@ func _process(delta: float) -> void:
 		elif Input.is_action_pressed('ui_down'):
 			target_dir = Vector2.DOWN
 		set_facing_dir(target_dir)
+		if Input.is_action_just_pressed('shoot'):
+			shoot() #执行发射子弹
 		var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
 		if not collide or not collide.get_collider(): return
 	else: 
@@ -89,11 +95,11 @@ func _draw() -> void:
 		rect.size.x, rect.size.y)
 	draw_style_box(box, new_rect.grow(2.0))
 
-# 设置渲染层级
+## 设置渲染层级
 func set_render_index(index: int) -> void:
 	_tank_sprite.z_index = index
 
-# 设置坦克类型
+## 设置坦克类型
 func set_tank_type(type: GameEnums.TankType) -> void:
 	_tank_type = type
 	set_facing_dir(_facing_dir)
@@ -104,10 +110,10 @@ func set_tank_type(type: GameEnums.TankType) -> void:
 	_tank_pivot.position = - offset
 	_collision_shape.position = - offset
 
-# 获取坦克类型
+## 获取坦克类型
 func get_tank_type() -> GameEnums.TankType: return _tank_type
 
-# 转换不标准的方向到标准方向
+## 转换不标准的方向到标准方向
 func _convert_dir_to_direction(dir: Vector2) -> String:
 	if dir == Vector2.ZERO: return ""
 	if dir == Vector2.LEFT: return "left"
@@ -116,7 +122,7 @@ func _convert_dir_to_direction(dir: Vector2) -> String:
 	elif dir == Vector2.DOWN: return "down"
 	else: return ""
 
-# 设置朝向
+## 设置朝向
 func set_facing_dir(dir: Vector2) -> void:
 	if dir == Vector2.ZERO: return
 	_facing_dir = dir # 更新当前的朝向数据
@@ -124,25 +130,25 @@ func set_facing_dir(dir: Vector2) -> void:
 	if dir_name == "": return
 	_tank_sprite.texture = _tank_atlas_textures[dir_name]
 
-# 获取朝向数据
+## 获取朝向数据
 func get_facing_dir() -> Vector2: return _facing_dir
 
-# 设置能力组合
+## 设置能力组合
 func set_capabilities(capabilities: Array[CapabilityProperty]) -> void:
 	_capabilities = capabilities
 
-# 获取现有的能力组合
+## 获取现有的能力组合
 func get_capabilities() -> Array[CapabilityProperty]: return _capabilities
 
-# 是否有轮渡能力
+## 是否有轮渡能力
 func has_ferry_capability() -> bool:
 	return _capabilities.any(func(e): return e is CapabilityProperty.Ferry)
 
-# 是否有保护衣的能力
+## 是否有保护衣的能力
 func has_protect_clothes() -> bool: 
 	return _capabilities.any(func(e): return e is CapabilityProperty.ProtectClothes)
 
-# 更新精灵
+## 更新精灵
 func update_sprite( \
 	new_textures: Dictionary[String, AtlasTexture]) -> void:
 	_tank_atlas_textures = new_textures
@@ -150,7 +156,19 @@ func update_sprite( \
 	if dir_name == "": return
 	_tank_sprite.texture = _tank_atlas_textures[dir_name]
 
-# 显示被保护的状态
+## 发射子弹
+func shoot() -> void:
+	var location = position
+	var tank_size = _tank_sprite.get_rect().size
+	if _facing_dir == Vector2.LEFT or \
+		_facing_dir == Vector2.RIGHT:
+		location.y = location.y - tank_size.y / 2.0
+	else: location.x = location.x - tank_size.x / 2.0
+	var bullet = Bullet.create( \
+		location, _facing_dir, _tank_type)
+	GameGlobals.add_child_to_war_map.emit(bullet)
+
+## 显示被保护的状态
 func show_protected_effect() -> void:
 	_release_protect_effect_timer()
 	
@@ -168,7 +186,7 @@ func show_protected_effect() -> void:
 	add_child(_protect_effect_timer)
 	_protect_effect_timer.start(holdon_sec)
 
-# 停止保护衣动画状态
+## 停止保护衣动画状态
 func stop_protected_effect() -> void:
 	_release_protect_effect_timer()
 	_animated_sprite.stop()
@@ -178,7 +196,7 @@ func stop_protected_effect() -> void:
 		func(e): return e is CapabilityProperty.ProtectClothes)
 	for obj in objs: _capabilities.erase(obj)
 
-# 释放保护衣特效定时器
+## 释放保护衣特效定时器
 func _release_protect_effect_timer() -> void:
 	if not _protect_effect_timer: return
 	if not _protect_effect_timer.is_stopped():
@@ -186,7 +204,7 @@ func _release_protect_effect_timer() -> void:
 	_protect_effect_timer.queue_free()
 	_protect_effect_timer = null
 
-# 显示闪烁状态
+## 显示闪烁状态
 func show_blink_effect() -> void:
 	_dispose_blink_effect() #取消闪烁动画
 	_flicker_tween = get_tree().create_tween().set_loops(0)
@@ -200,25 +218,25 @@ func _dispose_blink_effect() -> void:
 	_flicker_tween = null
 	_tank_sprite.set_deferred('modulate:a', 1.0)
 
-# 显示红色闪烁状态
+## 显示红色闪烁状态
 func show_red_blink_effect() -> void:
 	_dispose_red_blink_effect()
 	_red_flicker_tween = get_tree().create_tween().set_loops(0)
 	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.WHITE, 0.5)
 	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.DARK_RED, 0.5)
 
-# 取消红色闪烁动画
+## 取消红色闪烁动画
 func _dispose_red_blink_effect() -> void:
 	if not _red_flicker_tween: return
 	_red_flicker_tween.kill()
 	_red_flicker_tween = null
 	_tank_sprite.set_deferred('modulate:a', 1.0)
 
-# 显示爆炸销毁状态
+## 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:
 	pass
 
-# 创建一个实例
+## 创建一个实例
 static func create( \
 	type: GameEnums.TankType, \
 	location: Vector2 \
@@ -231,7 +249,7 @@ static func create( \
 	instance.set_tank_type(type) #设置坦克类型
 	return instance
 
-# 获取玩家的 texture 资源
+## 获取玩家的 texture 资源
 static func get_tank_atlas_textures(type: GameEnums.TankType) -> Dictionary[String, AtlasTexture]:
 	var dic: Dictionary[String, AtlasTexture] = {}
 	var dirs = ['left', 'right', 'up', 'down']

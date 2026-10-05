@@ -105,3 +105,6 @@ func get_map_data(stage: int) -> DataResult:
 	var map_json_data = fa.get_as_text()
 	fa.close()
 	return DataResult.ok(JSON.parse_string(map_json_data))
+
+## 添加子节点到地图节点
+signal add_child_to_war_map(child: Node2D)

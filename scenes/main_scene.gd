@@ -28,9 +28,6 @@ var _player_lifes: NumberText
 @export
 var _map_tile_packed_scene: PackedScene
 
-@export
-var _player_tank_packed_scene: PackedScene
-
 func _ready() -> void:
 	_initialize() #初始化方法
 
@@ -48,7 +45,10 @@ func _initialize() -> void:
 		_game_over_tag.visible = false #设置默认不可见
 	_game_over_tag.position.x = GameGlobals.GAME_MAP_CONTAINER_SIZE.x / 2.0
 	_load_map_tiles(_stage_level.get_number()) #加载地图数据
+	
 	_generate_player_tank() #生成玩家坦克
+	GameGlobals.add_child_to_war_map\
+		.connect(func(child): _map_container.add_child(child)) #添加新节点到地图中
 
 func _process(_delta: float) -> void:
 	pass
@@ -122,12 +122,12 @@ func _show_game_over_flinker_effect() -> void:
 # 生成玩家坦克
 func _generate_player_tank() -> void:
 	var player_tank = Tank.create( \
-		GameEnums.TankType.enemy4, \
+		GameEnums.TankType.enemy3, \
 		Vector2(50, 100))
 	player_tank.allow_control = true
 	player_tank.set_render_index(100)
 	player_tank.set_capabilities([ \
-		CapabilityProperty.Ferry.new(), \
+		# CapabilityProperty.Ferry.new(), \
 		CapabilityProperty.ProtectClothes.new(), \
 		])
 	_map_container.add_child(player_tank)
