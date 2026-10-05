@@ -153,7 +153,7 @@ color = Color(0, 0, 0, 1)
 
 [node name="Left" type="StaticBody2D" parent="WorldBoundaries" unique_id=230713872]
 position = Vector2(8, 224)
-collision_mask = 6
+collision_mask = 30
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundaries/Left" unique_id=1966607311]
 shape = SubResource("RectangleShape2D_85042")

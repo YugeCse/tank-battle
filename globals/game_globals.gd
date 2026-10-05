@@ -19,6 +19,10 @@ const DEFAULT_ENEMY_TOTAL_COUNT = 20
 # 游戏默认玩家生命总数：3
 const DEFAULT_PLAYER_LIFE_COUNT = 3
 
+## 添加子节点到地图节点
+@warning_ignore("unused_signal")
+signal add_child_to_war_map(child: Node2D)
+
 # 当前关卡
 var _stage_level: int = 1
 
@@ -105,6 +109,3 @@ func get_map_data(stage: int) -> DataResult:
 	var map_json_data = fa.get_as_text()
 	fa.close()
 	return DataResult.ok(JSON.parse_string(map_json_data))
-
-## 添加子节点到地图节点
-signal add_child_to_war_map(child: Node2D)

@@ -23,6 +23,8 @@ region = Rect2(99, 97, 5, 4)
 size = Vector2(5, 6)
 
 [node name="Bullet" type="Area2D" unique_id=650813032 node_paths=PackedStringArray("_bullet_sprite", "_collision_shape")]
+collision_layer = 24
+collision_mask = 1279
 script = ExtResource("1_jdofu")
 _bullet_sprite = NodePath("Sprite2D")
 _collision_shape = NodePath("CollisionShape2D")
@@ -37,5 +39,8 @@ _bullet_sprite_tres = Dictionary[String, AtlasTexture]({
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=814891286]
 shape = SubResource("RectangleShape2D_85042")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1677996790]
+playback_type = 1
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

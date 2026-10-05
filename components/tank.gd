@@ -1,11 +1,15 @@
 @tool
 extends CharacterBody2D
 
+## 坦克类
 class_name Tank
 
 ## 是否允许被控制
 @export
 var allow_control: bool
+
+## 血量，默认：1
+var blood: int = 1
 
 ## 移动速度
 @export
@@ -38,30 +42,40 @@ var _collision_shape: CollisionShape2D
 @export
 var _animated_sprite: AnimatedSprite2D
 
-## 保护衣特效的定时器
-var _protect_effect_timer: Timer
-
 ## 闪烁动画对象
 var _flicker_tween: Tween
 
 ## 红色闪烁动画对象
 var _red_flicker_tween: Tween
 
+## 保护衣特效的定时器
+var _protect_effect_timer: Timer
+
+## 自动移动的定时器
+var _auto_move_timer: Timer
+
+## 自动开火的定时器
+var _auto_fire_timer: Timer
+
 ## 坦克资源数据合集
 @export
 var _tank_atlas_textures: Dictionary[String, AtlasTexture]
 
+## 获取当前是否是出生状态
+var is_born_state: bool:
+	get: return _animated_sprite.is_playing() and _animated_sprite.animation == 'born'
+
 func _ready() -> void:
-	set_tank_type(_tank_type)
-	if has_protect_clothes():
-		show_protected_effect()
+	set_collision_available(false) #默认设置碰撞不可用
+	set_tank_type(_tank_type) #默认设置坦克类型
+	set_facing_dir(_facing_dir) #设置朝向数据
+	show_born_effect() #显示初始特效
 	if _tank_type == GameEnums.TankType.player:
 		set_collision_layer_value(CollisionLayers.layer_player_tank, true)
 	else: set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
-	# 2s后执行闪烁动画
-	get_tree().create_timer(2.0).timeout.connect(func(): show_red_blink_effect())
-
+	
 func _process(delta: float) -> void:
+	if Engine.is_editor_hint() or is_born_state: return
 	if allow_control:
 		var target_dir = Vector2.ZERO
 		if Input.is_action_pressed('ui_left'):
@@ -72,7 +86,8 @@ func _process(delta: float) -> void:
 			target_dir = Vector2.UP
 		elif Input.is_action_pressed('ui_down'):
 			target_dir = Vector2.DOWN
-		set_facing_dir(target_dir)
+		if target_dir != Vector2.ZERO:
+			set_facing_dir(target_dir)
 		if Input.is_action_just_pressed('shoot'):
 			shoot() #执行发射子弹
 		var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
@@ -109,6 +124,13 @@ func set_tank_type(type: GameEnums.TankType) -> void:
 	var offset = shape.size / 2.0
 	_tank_pivot.position = - offset
 	_collision_shape.position = - offset
+	# 设置碰撞相关的属性
+	if _tank_type != GameEnums.TankType.player:
+		set_collision_mask_value(CollisionLayers.layer_enemy_tank, false)
+		set_collision_mask_value(CollisionLayers.layer_enemy_bullet, false)
+	else:
+		set_collision_mask_value(CollisionLayers.layer_player_tank, false)
+		set_collision_mask_value(CollisionLayers.layer_player_bullet, false)
 
 ## 获取坦克类型
 func get_tank_type() -> GameEnums.TankType: return _tank_type
@@ -156,6 +178,10 @@ func update_sprite( \
 	if dir_name == "": return
 	_tank_sprite.texture = _tank_atlas_textures[dir_name]
 
+## 设置碰撞是否可用
+func set_collision_available(value: bool) -> void:
+	_collision_shape.set_deferred('disabled', !value)
+
 ## 发射子弹
 func shoot() -> void:
 	var location = position
@@ -163,18 +189,35 @@ func shoot() -> void:
 	if _facing_dir == Vector2.LEFT or \
 		_facing_dir == Vector2.RIGHT:
 		location.y = location.y - tank_size.y / 2.0
-	else: location.x = location.x - tank_size.x / 2.0
+		location.x = location.x + sign(_facing_dir.x) * tank_size.x / 4.0
+	else: 
+		location.x = location.x - tank_size.x / 2.0
+		location.y = location.y + sign(_facing_dir.y) * tank_size.y / 4.0
 	var bullet = Bullet.create( \
 		location, _facing_dir, _tank_type)
 	GameGlobals.add_child_to_war_map.emit(bullet)
 
+## 显示出生状态
+func show_born_effect() -> void:
+	_tank_sprite.visible = false
+	_animated_sprite.visible = true
+	_animated_sprite.animation_finished\
+		.connect(func(): _on_born_effect_finished())
+	_animated_sprite.play('born') #播放出生特效
+
+## 出生特效完成时的事件
+func _on_born_effect_finished() -> void:
+	_tank_sprite.visible = true
+	_animated_sprite.visible = false
+	set_collision_available(true) #设置此时碰撞状态可用
+	#如果有保护衣，则显示被保护状态
+	if has_protect_clothes(): show_protected_effect()
+
 ## 显示被保护的状态
 func show_protected_effect() -> void:
 	_release_protect_effect_timer()
-	
 	_animated_sprite.visible = true
 	_animated_sprite.play('protect')
-	
 	var holdon_sec = (
 		_capabilities.filter( \
 		func(e): return e is CapabilityProperty.ProtectClothes)[0] \
@@ -206,13 +249,13 @@ func _release_protect_effect_timer() -> void:
 
 ## 显示闪烁状态
 func show_blink_effect() -> void:
-	_dispose_blink_effect() #取消闪烁动画
+	dispose_blink_effect() #取消闪烁动画
 	_flicker_tween = get_tree().create_tween().set_loops(0)
 	_flicker_tween.tween_property(_tank_sprite, "modulate:a", 0.2, 0.5)
 	_flicker_tween.tween_property(_tank_sprite, "modulate:a", 1.0, 0.5)
 
 # 取消闪烁动画
-func _dispose_blink_effect() -> void:
+func dispose_blink_effect() -> void:
 	if not _flicker_tween: return
 	_flicker_tween.kill()
 	_flicker_tween = null
@@ -220,26 +263,79 @@ func _dispose_blink_effect() -> void:
 
 ## 显示红色闪烁状态
 func show_red_blink_effect() -> void:
-	_dispose_red_blink_effect()
+	dispose_red_blink_effect()
 	_red_flicker_tween = get_tree().create_tween().set_loops(0)
 	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.WHITE, 0.5)
 	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.DARK_RED, 0.5)
 
 ## 取消红色闪烁动画
-func _dispose_red_blink_effect() -> void:
+func dispose_red_blink_effect() -> void:
 	if not _red_flicker_tween: return
 	_red_flicker_tween.kill()
 	_red_flicker_tween = null
 	_tank_sprite.set_deferred('modulate:a', 1.0)
 
+## 受到攻击
+func attacked(attached_point: int) -> void:
+	if blood >= 1:
+		blood -= attached_point #减少血量
+	if blood <= 0: show_explode_destroy_effect()
+
 ## 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:
+	_collision_shape.set_deferred('disabled', true)
+	queue_free() #从节点中删除
+	var explode_effect = ExplodeEffect\
+		.create(position, true)
+	GameGlobals.add_child_to_war_map.emit(explode_effect)
+
+## 启动自动移动的定时器
+func start_auto_move_timer() -> void:
+	_release_auto_move_timer()
+	_auto_move_timer = Timer.new()
+	_auto_move_timer.one_shot = true
+	_auto_move_timer.timeout.connect(_on_auto_move_timer_finished)
+	_auto_move_timer.autostart = true
+	add_child(_auto_move_timer)
+
+## 释放自动移动的定时器
+func _release_auto_move_timer() -> void:
+	if not _auto_move_timer: return
+	if not _auto_move_timer.is_stopped():
+		_auto_move_timer.stop()
+	_auto_move_timer.queue_free()
+	_auto_move_timer = null
+
+## 自动移动的定时器完成时的事件
+func _on_auto_move_timer_finished() -> void:
+	pass
+
+## 启动自动开火的定时器
+func start_auto_fire_timer() -> void:
+	_release_auto_fire_timer()
+	_auto_fire_timer = Timer.new()
+	_auto_fire_timer.one_shot = true
+	_auto_fire_timer.timeout.connect(_on_auto_fire_timer_finished)
+	_auto_fire_timer.autostart = true
+	add_child(_auto_fire_timer)
+
+## 释放自动开火的定时器
+func _release_auto_fire_timer() -> void:
+	if not _auto_fire_timer: return
+	if not _auto_fire_timer.is_stopped():
+		_auto_fire_timer.stop()
+	_auto_fire_timer.queue_free()
+	_auto_fire_timer = null
+
+## 自动开火定时器完成任务
+func _on_auto_fire_timer_finished() -> void:
 	pass
 
 ## 创建一个实例
 static func create( \
 	type: GameEnums.TankType, \
-	location: Vector2 \
+	location: Vector2, \
+	facing_dir: Vector2,
 ) -> Tank:
 	var instance = \
 		(load("res://components/tank.tscn") \
@@ -247,6 +343,7 @@ static func create( \
 	instance.position = location
 	instance.update_sprite(get_tank_atlas_textures(type))
 	instance.set_tank_type(type) #设置坦克类型
+	instance.set_facing_dir(facing_dir)
 	return instance
 
 ## 获取玩家的 texture 资源

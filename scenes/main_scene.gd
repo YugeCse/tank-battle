@@ -29,13 +29,6 @@ var _player_lifes: NumberText
 var _map_tile_packed_scene: PackedScene
 
 func _ready() -> void:
-	_initialize() #初始化方法
-
-func _enter_tree() -> void:
-	_initialize() #初始化方法
-
-# 初始化方法
-func _initialize() -> void:
 	_stage_level.set_number(\
 		1 if Engine.is_editor_hint() else GameGlobals.get_stage_level())
 	_player_lifes.set_number( \
@@ -45,13 +38,14 @@ func _initialize() -> void:
 		_game_over_tag.visible = false #设置默认不可见
 	_game_over_tag.position.x = GameGlobals.GAME_MAP_CONTAINER_SIZE.x / 2.0
 	_load_map_tiles(_stage_level.get_number()) #加载地图数据
-	
 	_generate_player_tank() #生成玩家坦克
-	GameGlobals.add_child_to_war_map\
-		.connect(func(child): _map_container.add_child(child)) #添加新节点到地图中
+	GameGlobals.add_child_to_war_map.connect(_on_add_child_to_war_map) #添加新节点到地图中
 
-func _process(_delta: float) -> void:
-	pass
+## 收到添加子节点到地图节点的信号事件
+func _on_add_child_to_war_map(node: Node2D) -> void:
+	if node.get_parent() != null:
+		node.get_parent().remove_child(node)
+	_map_container.add_child(node)
 
 func _draw() -> void:
 	var visible_rect = get_viewport_rect()
@@ -121,13 +115,14 @@ func _show_game_over_flinker_effect() -> void:
 
 # 生成玩家坦克
 func _generate_player_tank() -> void:
+	var born_position = Vector2( \
+		GameGlobals.GAME_MAP_SIZE.x / 2.0 - 32, \
+		GameGlobals.GAME_MAP_SIZE.y)
 	var player_tank = Tank.create( \
-		GameEnums.TankType.enemy3, \
-		Vector2(50, 100))
+		GameEnums.TankType.player, born_position, Vector2.UP)
 	player_tank.allow_control = true
 	player_tank.set_render_index(100)
 	player_tank.set_capabilities([ \
 		# CapabilityProperty.Ferry.new(), \
-		CapabilityProperty.ProtectClothes.new(), \
-		])
+		CapabilityProperty.ProtectClothes.new() ])
 	_map_container.add_child(player_tank)

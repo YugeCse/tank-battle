@@ -109,6 +109,14 @@ pointing/emulate_touch_from_mouse=true
 2d_physics/layer_1="world_boundary"
 2d_physics/layer_2="player_tank"
 2d_physics/layer_3="enemy_tank"
+2d_physics/layer_4="player_bullet"
+2d_physics/layer_5="enemy_bullet"
+2d_physics/layer_6="map_tile_mud_wall"
+2d_physics/layer_7="map_tile_steel_wall"
+2d_physics/layer_8="map_tile_grass"
+2d_physics/layer_9="map_tile_river"
+2d_physics/layer_10="map_tile_ice"
+2d_physics/layer_11="map_tile_master"
 
 [physics]
 

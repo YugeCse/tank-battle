@@ -4,6 +4,34 @@
 [ext_resource type="Texture2D" uid="uid://cniag7n1vd8tm" path="res://assets/textures/tank_player/tank_player_up.tres" id="2_0nxwf"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_yfpnr"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_yfpnr"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(256, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j3dnk"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(288, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4t2s6"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(320, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvahr"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(352, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yc802"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(384, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xiwyp"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(416, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acnyi"]
+atlas = ExtResource("3_yfpnr")
+region = Rect2(448, 32, 32, 32)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_qxjua"]
 atlas = ExtResource("3_yfpnr")
 region = Rect2(160, 96, 32, 32)
@@ -15,12 +43,33 @@ region = Rect2(160, 128, 32, 32)
 [sub_resource type="SpriteFrames" id="SpriteFrames_xohu8"]
 animations = [{
 "frames": [],
-"loop": 1,
+"loop": 0,
 "name": &"boom",
 "speed": 5.0
 }, {
-"frames": [],
-"loop": 1,
+"frames": [{
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_yfpnr")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_j3dnk")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_4t2s6")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_nvahr")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_yc802")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_xiwyp")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_acnyi")
+}],
+"loop": 0,
 "name": &"born",
 "speed": 5.0
 }, {
@@ -36,10 +85,12 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0nxwf"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qxjua"]
 size = Vector2(26, 26)
 
 [node name="Tank" type="CharacterBody2D" unique_id=1256696617 node_paths=PackedStringArray("_tank_sprite", "_tank_pivot", "_collision_shape", "_animated_sprite")]
+collision_layer = 6
+collision_mask = 1387
 script = ExtResource("1_d5xny")
 _tank_sprite = NodePath("Pivot/Sprite2D")
 _tank_pivot = NodePath("CollisionShape2D")
@@ -50,14 +101,15 @@ _animated_sprite = NodePath("Pivot/AnimatedSprite2D")
 position = Vector2(-13, -13)
 
 [node name="Sprite2D" type="Sprite2D" parent="Pivot" unique_id=1812382232]
+modulate = Color(0.9485729, 0.88694906, 0.88694906, 1)
 texture = ExtResource("2_0nxwf")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Pivot" unique_id=1006208577]
 visible = false
 z_index = 1000
 sprite_frames = SubResource("SpriteFrames_xohu8")
-animation = &"protect"
+animation = &"born"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1397192951]
 position = Vector2(-13, -13)
-shape = SubResource("RectangleShape2D_0nxwf")
+shape = SubResource("RectangleShape2D_qxjua")
