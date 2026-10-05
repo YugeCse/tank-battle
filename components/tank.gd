@@ -38,6 +38,12 @@ var _animated_sprite: AnimatedSprite2D
 # 保护衣特效的定时器
 var _protect_effect_timer: Timer
 
+# 闪烁动画
+var _flicker_tween: Tween
+
+# 红色闪烁动画
+var _red_flicker_tween: Tween
+
 @export
 var _tank_atlas_textures: Dictionary[String, AtlasTexture]
 
@@ -48,6 +54,8 @@ func _ready() -> void:
 	if _tank_type == GameEnums.TankType.player:
 		set_collision_layer_value(CollisionLayers.layer_player_tank, true)
 	else: set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
+	# 2s后执行闪烁动画
+	get_tree().create_timer(2.0).timeout.connect(func(): show_red_blink_effect())
 
 func _process(delta: float) -> void:
 	if allow_control:
@@ -65,6 +73,21 @@ func _process(delta: float) -> void:
 		if not collide or not collide.get_collider(): return
 	else: 
 		pass #自主随机移动
+
+func _draw() -> void:
+	if not has_ferry_capability(): return
+	var box = StyleBoxFlat.new()
+	box.set_border_width_all(2)
+	box.set_corner_radius_all(8)
+	box.bg_color = Color.TRANSPARENT
+	box.border_color = Color.WHITE_SMOKE
+	var rect = _tank_sprite.get_rect()
+	var rect_s = rect.size / 2.0
+	var new_rect = Rect2( \
+		rect.position.x - rect_s.x, \
+		rect.position.y - rect_s.y, \
+		rect.size.x, rect.size.y)
+	draw_style_box(box, new_rect.grow(2.0))
 
 # 设置渲染层级
 func set_render_index(index: int) -> void:
@@ -111,6 +134,10 @@ func set_capabilities(capabilities: Array[CapabilityProperty]) -> void:
 # 获取现有的能力组合
 func get_capabilities() -> Array[CapabilityProperty]: return _capabilities
 
+# 是否有轮渡能力
+func has_ferry_capability() -> bool:
+	return _capabilities.any(func(e): return e is CapabilityProperty.Ferry)
+
 # 是否有保护衣的能力
 func has_protect_clothes() -> bool: 
 	return _capabilities.any(func(e): return e is CapabilityProperty.ProtectClothes)
@@ -138,6 +165,7 @@ func show_protected_effect() -> void:
 	_protect_effect_timer.one_shot = true
 	_protect_effect_timer.timeout \
 		.connect(func(): stop_protected_effect())
+	add_child(_protect_effect_timer)
 	_protect_effect_timer.start(holdon_sec)
 
 # 停止保护衣动画状态
@@ -155,15 +183,36 @@ func _release_protect_effect_timer() -> void:
 	if not _protect_effect_timer: return
 	if not _protect_effect_timer.is_stopped():
 		_protect_effect_timer.stop()
+	_protect_effect_timer.queue_free()
 	_protect_effect_timer = null
 
 # 显示闪烁状态
-func show_flink_effect() -> void:
-	pass
+func show_blink_effect() -> void:
+	_dispose_blink_effect() #取消闪烁动画
+	_flicker_tween = get_tree().create_tween().set_loops(0)
+	_flicker_tween.tween_property(_tank_sprite, "modulate:a", 0.2, 0.5)
+	_flicker_tween.tween_property(_tank_sprite, "modulate:a", 1.0, 0.5)
+
+# 取消闪烁动画
+func _dispose_blink_effect() -> void:
+	if not _flicker_tween: return
+	_flicker_tween.kill()
+	_flicker_tween = null
+	_tank_sprite.set_deferred('modulate:a', 1.0)
 
 # 显示红色闪烁状态
-func show_red_flink_effect() -> void:
-	pass
+func show_red_blink_effect() -> void:
+	_dispose_red_blink_effect()
+	_red_flicker_tween = get_tree().create_tween().set_loops(0)
+	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.WHITE, 0.5)
+	_red_flicker_tween.tween_property(_tank_sprite, "modulate", Color.DARK_RED, 0.5)
+
+# 取消红色闪烁动画
+func _dispose_red_blink_effect() -> void:
+	if not _red_flicker_tween: return
+	_red_flicker_tween.kill()
+	_red_flicker_tween = null
+	_tank_sprite.set_deferred('modulate:a', 1.0)
 
 # 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:

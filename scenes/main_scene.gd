@@ -126,5 +126,8 @@ func _generate_player_tank() -> void:
 		Vector2(50, 100))
 	player_tank.allow_control = true
 	player_tank.set_render_index(100)
-	player_tank.set_capabilities([CapabilityProperty.ProtectClothes.new()])
+	player_tank.set_capabilities([ \
+		CapabilityProperty.Ferry.new(), \
+		CapabilityProperty.ProtectClothes.new(), \
+		])
 	_map_container.add_child(player_tank)
