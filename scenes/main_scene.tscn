@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://dqjgggajvhtd3" path="res://assets/textures/num_7.tres" id="12_xdqt8"]
 [ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
 [ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
+[ext_resource type="PackedScene" uid="uid://daruekwtti3ei" path="res://components/tank_factory.tscn" id="16_01n6w"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
 atlas = ExtResource("3_7ykc4")
@@ -148,6 +149,8 @@ offset_top = 16.0
 offset_right = 432.0
 offset_bottom = 432.0
 color = Color(0, 0, 0, 1)
+
+[node name="TankFactory" parent="MapContaner" unique_id=2064319392 instance=ExtResource("16_01n6w")]
 
 [node name="WorldBoundaries" type="Node2D" parent="." unique_id=1006000778]
 

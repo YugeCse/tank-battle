@@ -1,3 +1,7 @@
 [gd_scene format=3 uid="uid://daruekwtti3ei"]
 
+[ext_resource type="Script" uid="uid://dhvbf7gxbcs0c" path="res://components/tank_factory.gd" id="1_7g4sg"]
+
 [node name="TankFactory" type="Node2D" unique_id=2064319392]
+script = ExtResource("1_7g4sg")
+born_positions = Array[Vector2]([Vector2(32, 32), Vector2(224, 32), Vector2(416, 32)])

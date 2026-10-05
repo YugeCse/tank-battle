@@ -55,15 +55,24 @@ var _protect_effect_timer: Timer
 var _auto_move_timer: Timer
 
 ## 自动开火的定时器
-var _auto_fire_timer: Timer
+var _auto_fire_timer: Timer 
+
+## 自动移动方向数据
+var _auto_move_direction: Vector2 = Vector2.ZERO
+
+## 生命状态
+var _life_state: GameEnums.LifeState = GameEnums.LifeState.born
 
 ## 坦克资源数据合集
 @export
 var _tank_atlas_textures: Dictionary[String, AtlasTexture]
 
 ## 获取当前是否是出生状态
-var is_born_state: bool:
-	get: return _animated_sprite.is_playing() and _animated_sprite.animation == 'born'
+var is_born_state: bool: 
+	get: return _life_state == GameEnums.LifeState.born
+
+## 获取生命状态
+func get_life_state() -> GameEnums.LifeState: return _life_state
 
 func _ready() -> void:
 	set_collision_available(false) #默认设置碰撞不可用
@@ -75,9 +84,10 @@ func _ready() -> void:
 	else: set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
 	
 func _process(delta: float) -> void:
-	if Engine.is_editor_hint() or is_born_state: return
+	if Engine.is_editor_hint() or \
+		_life_state != GameEnums.LifeState.alive: return
+	var target_dir = Vector2.ZERO
 	if allow_control:
-		var target_dir = Vector2.ZERO
 		if Input.is_action_pressed('ui_left'):
 			target_dir = Vector2.LEFT
 		elif Input.is_action_pressed('ui_right'):
@@ -86,14 +96,13 @@ func _process(delta: float) -> void:
 			target_dir = Vector2.UP
 		elif Input.is_action_pressed('ui_down'):
 			target_dir = Vector2.DOWN
-		if target_dir != Vector2.ZERO:
-			set_facing_dir(target_dir)
 		if Input.is_action_just_pressed('shoot'):
 			shoot() #执行发射子弹
-		var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
-		if not collide or not collide.get_collider(): return
-	else: 
-		pass #自主随机移动
+	else: target_dir = _auto_move_direction
+	if target_dir != Vector2.ZERO:
+		set_facing_dir(target_dir)
+	var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
+	if not collide or not collide.get_collider(): return
 
 func _draw() -> void:
 	if not has_ferry_capability(): return
@@ -207,11 +216,17 @@ func show_born_effect() -> void:
 
 ## 出生特效完成时的事件
 func _on_born_effect_finished() -> void:
+	_life_state = GameEnums.LifeState.alive
 	_tank_sprite.visible = true
 	_animated_sprite.visible = false
 	set_collision_available(true) #设置此时碰撞状态可用
-	#如果有保护衣，则显示被保护状态
-	if has_protect_clothes(): show_protected_effect()
+	if _tank_type == GameEnums.TankType.player:
+		#如果有保护衣，则显示被保护状态
+		if has_protect_clothes():
+			show_protected_effect()
+	else:
+		start_auto_move_timer() #启动自动移动的定时器
+		start_auto_fire_timer() #启动自动开火的定时器
 
 ## 显示被保护的状态
 func show_protected_effect() -> void:
@@ -283,17 +298,23 @@ func attacked(attached_point: int) -> void:
 
 ## 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:
+	_life_state = GameEnums.LifeState.death
+	var size = _tank_sprite.get_rect().size
 	_collision_shape.set_deferred('disabled', true)
 	queue_free() #从节点中删除
 	var explode_effect = ExplodeEffect\
-		.create(position, true)
+		.create(position - size / 2.0, true)
+	explode_effect.z_index = z_index
 	GameGlobals.add_child_to_war_map.emit(explode_effect)
 
 ## 启动自动移动的定时器
-func start_auto_move_timer() -> void:
+func start_auto_move_timer(wait_time: Variant = null) -> void:
+	var rand_sec = wait_time \
+		if wait_time != null else randf_range(0.5, 2.3)
 	_release_auto_move_timer()
 	_auto_move_timer = Timer.new()
 	_auto_move_timer.one_shot = true
+	_auto_move_timer.wait_time = rand_sec
 	_auto_move_timer.timeout.connect(_on_auto_move_timer_finished)
 	_auto_move_timer.autostart = true
 	add_child(_auto_move_timer)
@@ -308,13 +329,20 @@ func _release_auto_move_timer() -> void:
 
 ## 自动移动的定时器完成时的事件
 func _on_auto_move_timer_finished() -> void:
-	pass
+	if _life_state != GameEnums.LifeState.alive: return
+	var target_dir = [Vector2.ZERO, Vector2.UP, \
+		Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT].pick_random()
+	_auto_move_direction = target_dir
+	start_auto_move_timer() #启动自动移动的定时器
 
 ## 启动自动开火的定时器
-func start_auto_fire_timer() -> void:
+func start_auto_fire_timer(wait_time: Variant = null) -> void:
+	var rand_sec = wait_time \
+		if wait_time != null else randf_range(0.5, 2.3)
 	_release_auto_fire_timer()
 	_auto_fire_timer = Timer.new()
 	_auto_fire_timer.one_shot = true
+	_auto_move_timer.wait_time = rand_sec
 	_auto_fire_timer.timeout.connect(_on_auto_fire_timer_finished)
 	_auto_fire_timer.autostart = true
 	add_child(_auto_fire_timer)
@@ -329,7 +357,9 @@ func _release_auto_fire_timer() -> void:
 
 ## 自动开火定时器完成任务
 func _on_auto_fire_timer_finished() -> void:
-	pass
+	if _life_state != GameEnums.LifeState.alive: return
+	shoot() #发起开火
+	start_auto_fire_timer() #启动自动开火的定时器
 
 ## 创建一个实例
 static func create( \

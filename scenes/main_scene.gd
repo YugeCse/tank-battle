@@ -62,7 +62,7 @@ func _load_map_tiles(stage: int) -> void:
 # 排版地图地砖精灵
 func _layout_map_tiles(map_data: Array) -> void:
 	for child in _map_container.get_children():
-		child.queue_free()
+		if child is MapTile: child.queue_free()
 	for row in map_data.size():
 		for column in map_data[row].size():
 			var dat = map_data[row][column] as int

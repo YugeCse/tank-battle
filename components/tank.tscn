@@ -101,7 +101,7 @@ _animated_sprite = NodePath("Pivot/AnimatedSprite2D")
 position = Vector2(-13, -13)
 
 [node name="Sprite2D" type="Sprite2D" parent="Pivot" unique_id=1812382232]
-modulate = Color(0.9485729, 0.88694906, 0.88694906, 1)
+modulate = Color(0.9292793, 0.84453636, 0.84453636, 1)
 texture = ExtResource("2_0nxwf")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Pivot" unique_id=1006208577]

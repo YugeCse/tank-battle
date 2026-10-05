@@ -33,6 +33,9 @@ const layer_map_tile_ice := 10
 ## 玩家总部
 const layer_map_tile_master := 11
 
+## 敌方出生基地
+const layer_enemy_born_area := 12
+
 ## 判断层之间是否发生了碰撞
 func is_collision( \
 	layer: int, \
