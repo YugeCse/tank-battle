@@ -88,17 +88,15 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qxjua"]
 size = Vector2(26, 26)
 
-[node name="Tank" type="CharacterBody2D" unique_id=1256696617 node_paths=PackedStringArray("_tank_sprite", "_tank_pivot", "_collision_shape", "_animated_sprite")]
+[node name="Tank" type="CharacterBody2D" unique_id=1256696617 node_paths=PackedStringArray("_tank_sprite", "_collision_shape", "_animated_sprite")]
 collision_layer = 6
-collision_mask = 1387
+collision_mask = 1383
 script = ExtResource("1_d5xny")
 _tank_sprite = NodePath("Pivot/Sprite2D")
-_tank_pivot = NodePath("CollisionShape2D")
 _collision_shape = NodePath("CollisionShape2D")
 _animated_sprite = NodePath("Pivot/AnimatedSprite2D")
 
 [node name="Pivot" type="Node2D" parent="." unique_id=1906880095]
-position = Vector2(-13, -13)
 
 [node name="Sprite2D" type="Sprite2D" parent="Pivot" unique_id=1812382232]
 modulate = Color(0.9292793, 0.84453636, 0.84453636, 1)
@@ -109,7 +107,8 @@ visible = false
 z_index = 1000
 sprite_frames = SubResource("SpriteFrames_xohu8")
 animation = &"born"
+frame = 6
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1397192951]
-position = Vector2(-13, -13)
 shape = SubResource("RectangleShape2D_qxjua")

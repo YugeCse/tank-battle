@@ -68,11 +68,12 @@ func get_sprite_size() -> Vector2: return $Sprite2D.texture.get_size() * scale
 ## 设置玩家总部爆炸销毁
 func set_master_boom_status() -> void:
 	set_collision_available(false)
-	var audioStreamPlayer = AudioStreamPlayer.new()
-	audioStreamPlayer.autoplay = true
-	audioStreamPlayer.stream = \
-		load('res://assets/sounds/playerCrack.mp3')
-	audioStreamPlayer.finished \
-		.connect(func(): audioStreamPlayer.queue_free())
-	add_child(audioStreamPlayer)
+	if GameGlobals.get_music_available():
+		var audioStreamPlayer = AudioStreamPlayer.new()
+		audioStreamPlayer.autoplay = true
+		audioStreamPlayer.stream = \
+			load('res://assets/sounds/playerCrack.mp3')
+		audioStreamPlayer.finished \
+			.connect(func(): audioStreamPlayer.queue_free())
+		add_child(audioStreamPlayer)
 	$Sprite2D.texture = load('res://assets/textures/map_tile_player_home_destroy.tres') as AtlasTexture

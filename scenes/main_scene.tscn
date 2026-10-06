@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bsesin4e370x1" path="res://assets/textures/enemy_tag.tres" id="2_pw63i"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
 [ext_resource type="PackedScene" uid="uid://cwrs2bs5acbww" path="res://components/map_tile.tscn" id="3_si52b"]
+[ext_resource type="PackedScene" uid="uid://dev6e05bgw733" path="res://components/war_map_container.tscn" id="4_6u1mn"]
 [ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/number_text.gd" id="4_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
 [ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
@@ -45,14 +46,15 @@ size = Vector2(446, 16)
 atlas = ExtResource("3_7ykc4")
 region = Rect2(384, 64, 62, 30)
 
-[node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_map_container", "_game_over_tag", "_enemy_grid_container", "_stage_level", "_player_lifes")]
+[node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_map_container", "_game_over_tag", "_enemy_grid_container", "_stage_level", "_player_lifes", "_enemy_tank_factory")]
 script = ExtResource("1_w2twt")
-_map_container = NodePath("MapContaner")
+_map_container = NodePath("WarMapContainer")
 _game_over_tag = NodePath("GameOver")
 _enemy_tag_atlas = ExtResource("2_pw63i")
 _enemy_grid_container = NodePath("InfoSidebar/EnemyGridContainer")
 _stage_level = NodePath("InfoSidebar/StageFlag/StageLevel")
 _player_lifes = NodePath("InfoSidebar/PlayerLifeTag/PlayerLifes")
+_enemy_tank_factory = NodePath("WarMapContainer/TankFactory")
 _map_tile_packed_scene = ExtResource("3_si52b")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
@@ -60,6 +62,12 @@ limit_left = 0
 limit_top = 0
 limit_right = 512
 limit_bottom = 448
+
+[node name="WarMapContainer" parent="." unique_id=198177823 instance=ExtResource("4_6u1mn")]
+position = Vector2(16, 16)
+
+[node name="TankFactory" parent="WarMapContainer" unique_id=2064319392 instance=ExtResource("16_01n6w")]
+_debug_mode = true
 
 [node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0
@@ -142,15 +150,6 @@ layout_mode = 0
 offset_right = 1.0
 offset_bottom = 448.0
 color = Color(0.4392157, 0.4392157, 0.4392157, 1)
-
-[node name="MapContaner" type="ColorRect" parent="." unique_id=931783397]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 432.0
-offset_bottom = 432.0
-color = Color(0, 0, 0, 1)
-
-[node name="TankFactory" parent="MapContaner" unique_id=2064319392 instance=ExtResource("16_01n6w")]
 
 [node name="WorldBoundaries" type="Node2D" parent="." unique_id=1006000778]
 

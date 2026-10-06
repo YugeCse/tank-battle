@@ -3,7 +3,7 @@ extends Node2D
 
 # 地图容器
 @export
-var _map_container: ColorRect
+var _map_container: Node2D
 
 # 游戏结束的标记精灵
 @export
@@ -26,7 +26,19 @@ var _stage_level: NumberText
 var _player_lifes: NumberText
 
 @export
+var _enemy_tank_factory: TankFactory
+
+var _enemy_tank_factory_mutex: Mutex = Mutex.new()
+
+@export
 var _map_tile_packed_scene: PackedScene
+
+func _enter_tree() -> void:
+	if Engine.is_editor_hint(): return
+	GameGlobals.add_child_to_war_map \
+		.connect(func(e): _on_add_child_to_war_map(e)) #添加新节点到地图中
+	_enemy_tank_factory.on_born_one_enemy_tank \
+		.connect(_remove_one_from_enemy_grids) #如果生产一个敌方坦克，移除一个标志
 
 func _ready() -> void:
 	_stage_level.set_number(\
@@ -39,19 +51,26 @@ func _ready() -> void:
 	_game_over_tag.position.x = GameGlobals.GAME_MAP_CONTAINER_SIZE.x / 2.0
 	_load_map_tiles(_stage_level.get_number()) #加载地图数据
 	_generate_player_tank() #生成玩家坦克
-	GameGlobals.add_child_to_war_map.connect(_on_add_child_to_war_map) #添加新节点到地图中
+	_play_start_game_audio() #播放开始游戏的音频
+
+## 播放开始游戏的音频
+func _play_start_game_audio():
+	if Engine.is_editor_hint() or \
+		not GameGlobals.get_music_available(): return
+	var audio_stream_player = AudioStreamPlayer.new()
+	audio_stream_player.stream = load('res://assets/sounds/start.mp3')
+	audio_stream_player.autoplay = true
+	add_child(audio_stream_player)
 
 ## 收到添加子节点到地图节点的信号事件
 func _on_add_child_to_war_map(node: Node2D) -> void:
-	if node.get_parent() != null:
-		node.get_parent().remove_child(node)
 	_map_container.add_child(node)
 
 func _draw() -> void:
 	var visible_rect = get_viewport_rect()
 	draw_rect(visible_rect, Color("#7e7e7e"))
 
-# 加载地图数据
+## 加载地图数据
 func _load_map_tiles(stage: int) -> void:
 	var map_data_result = GameGlobals.get_map_data(stage)
 	if map_data_result.success:
@@ -59,7 +78,7 @@ func _load_map_tiles(stage: int) -> void:
 		_layout_map_tiles(map_data)
 	else: print('地图数据加载失败!!!')
 
-# 排版地图地砖精灵
+## 排版地图地砖精灵
 func _layout_map_tiles(map_data: Array) -> void:
 	for child in _map_container.get_children():
 		if child is MapTile: child.queue_free()
@@ -80,7 +99,7 @@ func _layout_map_tiles(map_data: Array) -> void:
 			map_tile.set_render_index(0)
 			_map_container.add_child(map_tile)
 
-# 生成敌方表格数据
+## 生成敌方表格数据
 func _generate_enemy_grids() -> void:
 	_clear_enemy_grids_in_container()
 	var total = 20 if Engine.is_editor_hint() \
@@ -91,12 +110,20 @@ func _generate_enemy_grids() -> void:
 		enemy_tag.size = Vector2(14, 14)
 		_enemy_grid_container.add_child(enemy_tag)
 
-# 清理敌人表格数据
+## 从敌人表格中移除一条数据
+func _remove_one_from_enemy_grids() -> void:
+	_enemy_tank_factory_mutex.lock()
+	var children = _enemy_grid_container.get_children()
+	if not children.is_empty():
+		_enemy_grid_container.remove_child(children[0])
+	_enemy_tank_factory_mutex.unlock()
+
+## 清理敌人表格数据
 func _clear_enemy_grids_in_container() -> void:
 	for enemy_tag in _enemy_grid_container.get_children():
 		enemy_tag.queue_free()
 
-# 显示游戏结束的标记
+## 显示游戏结束的标记
 func _show_game_over_tag() -> void:
 	_game_over_tag.set_deferred("visible", true)
 	var tween = get_tree().create_tween()
@@ -104,7 +131,7 @@ func _show_game_over_tag() -> void:
 	tween.tween_property(_game_over_tag, "position",\
 		Vector2(_game_over_tag.position.x, GameGlobals.GAME_MAP_CONTAINER_SIZE.y / 2.0), 2.0)
 
-# 显示游戏结束 TAG 的效果
+## 显示游戏结束 TAG 的效果
 func _show_game_over_flinker_effect() -> void:
 	var tween = get_tree().create_tween()
 	tween.set_loops(6)
@@ -116,8 +143,8 @@ func _show_game_over_flinker_effect() -> void:
 # 生成玩家坦克
 func _generate_player_tank() -> void:
 	var born_position = Vector2( \
-		GameGlobals.GAME_MAP_SIZE.x / 2.0 - 32, \
-		GameGlobals.GAME_MAP_SIZE.y)
+		GameGlobals.GAME_MAP_SIZE.x / 2.0 - 48.0, \
+		GameGlobals.GAME_MAP_SIZE.y - 16.0)
 	var player_tank = Tank.create( \
 		GameEnums.TankType.player, born_position, Vector2.UP)
 	player_tank.allow_control = true

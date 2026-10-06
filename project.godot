@@ -36,6 +36,11 @@ project/assembly_name="tank-battle"
 
 enabled=PackedStringArray("res://addons/godit/plugin.cfg")
 
+[global_group]
+
+player_tank="坦克类型"
+enemy_tank="敌方坦克"
+
 [input]
 
 ui_accept={

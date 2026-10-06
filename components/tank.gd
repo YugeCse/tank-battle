@@ -30,10 +30,6 @@ var _capabilities: Array[CapabilityProperty] = []
 @export
 var _tank_sprite: Sprite2D
 
-## 坦克精灵旋转节点
-@export
-var _tank_pivot: Node2D
-
 ## 坦克精灵碰撞形状
 @export
 var _collision_shape: CollisionShape2D
@@ -79,9 +75,6 @@ func _ready() -> void:
 	set_tank_type(_tank_type) #默认设置坦克类型
 	set_facing_dir(_facing_dir) #设置朝向数据
 	show_born_effect() #显示初始特效
-	if _tank_type == GameEnums.TankType.player:
-		set_collision_layer_value(CollisionLayers.layer_player_tank, true)
-	else: set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
 	
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint() or \
@@ -130,15 +123,16 @@ func set_tank_type(type: GameEnums.TankType) -> void:
 	var shape = RectangleShape2D.new()
 	shape.size = _tank_sprite.texture.get_size()
 	_collision_shape.shape = shape
-	var offset = shape.size / 2.0
-	_tank_pivot.position = - offset
-	_collision_shape.position = - offset
 	# 设置碰撞相关的属性
 	if _tank_type != GameEnums.TankType.player:
-		set_collision_mask_value(CollisionLayers.layer_enemy_tank, false)
+		add_to_group(&'enemy_tank', false)
+		set_collision_layer_value(CollisionLayers.layer_enemy_tank, true)
+		#set_collision_mask_value(CollisionLayers.layer_enemy_tank, false)
 		set_collision_mask_value(CollisionLayers.layer_enemy_bullet, false)
 	else:
-		set_collision_mask_value(CollisionLayers.layer_player_tank, false)
+		add_to_group(&'player_tank', false)
+		set_collision_layer_value(CollisionLayers.layer_player_tank, true)
+		#set_collision_mask_value(CollisionLayers.layer_player_tank, false)
 		set_collision_mask_value(CollisionLayers.layer_player_bullet, false)
 
 ## 获取坦克类型
@@ -197,10 +191,8 @@ func shoot() -> void:
 	var tank_size = _tank_sprite.get_rect().size
 	if _facing_dir == Vector2.LEFT or \
 		_facing_dir == Vector2.RIGHT:
-		location.y = location.y - tank_size.y / 2.0
 		location.x = location.x + sign(_facing_dir.x) * tank_size.x / 4.0
 	else: 
-		location.x = location.x - tank_size.x / 2.0
 		location.y = location.y + sign(_facing_dir.y) * tank_size.y / 4.0
 	var bullet = Bullet.create( \
 		location, _facing_dir, _tank_type)
@@ -299,11 +291,10 @@ func attacked(attached_point: int) -> void:
 ## 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:
 	_life_state = GameEnums.LifeState.death
-	var size = _tank_sprite.get_rect().size
 	_collision_shape.set_deferred('disabled', true)
 	queue_free() #从节点中删除
 	var explode_effect = ExplodeEffect\
-		.create(position - size / 2.0, true)
+		.create(position, true)
 	explode_effect.z_index = z_index
 	GameGlobals.add_child_to_war_map.emit(explode_effect)
 

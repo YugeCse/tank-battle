@@ -1,29 +1,32 @@
 @tool
 extends Node
 
-# 游戏地砖大小：16
+## 游戏地砖大小：16
 const GAME_MAP_TILE_SIZE = 16
 
-# 游戏画布的尺寸: 512x448
+## 游戏画布的尺寸: 512x448
 const GAME_CANVS_SIZE = Vector2(512, 448)
 
-# 游戏地图尺寸：416x416
+## 游戏地图尺寸：416x416
 const GAME_MAP_SIZE = Vector2(416, 416)
 
-# 游戏地图外框：448x448
+## 游戏地图外框：448x448
 const GAME_MAP_CONTAINER_SIZE = Vector2(448, 448)
 
-# 游戏默认敌方的总数：20
+## 游戏默认敌方的总数：20
 const DEFAULT_ENEMY_TOTAL_COUNT = 20
 
-# 游戏默认玩家生命总数：3
+## 默认敌方在地图上的总数量
+const DEFAULT_ENEMY_COUNT_IN_MAP = 5
+
+## 游戏默认玩家生命总数：3
 const DEFAULT_PLAYER_LIFE_COUNT = 3
 
 ## 添加子节点到地图节点
-@warning_ignore("unused_signal")
+@warning_ignore('unused_signal')
 signal add_child_to_war_map(child: Node2D)
 
-# 当前关卡
+## 当前关卡
 var _stage_level: int = 1
 
 # 玩家总生命数

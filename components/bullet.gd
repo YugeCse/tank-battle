@@ -31,6 +31,11 @@ var _bullet_sprite_tres: Dictionary[String, AtlasTexture]
 func _ready() -> void:
 	set_sender(_sender)
 	set_run_dir(_run_dir)
+	_play_bullet_audio() #播放子弹的相关声音
+
+## 播放子弹的相关声音
+func _play_bullet_audio():
+	if not GameGlobals.get_music_available(): return
 	if _sender == GameEnums.TankType.player:
 		$AudioStreamPlayer.stream = load('res://assets/sounds/attack.mp3')
 	else: $AudioStreamPlayer.stream = load('res://assets/sounds/bulletCrack.mp3')
