@@ -358,9 +358,10 @@ func _release_auto_move_timer() -> void:
 ## 自动移动的定时器完成时的事件
 func _on_auto_move_timer_finished() -> void:
 	if _life_state != GameEnums.LifeState.alive: return
-	var target_dir = [Vector2.ZERO, Vector2.UP, \
-		Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT].pick_random()
-	_auto_move_direction = target_dir
+	var dirs = [Vector2.ZERO, Vector2.UP, \
+		Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]
+	dirs.erase(_facing_dir)
+	_auto_move_direction = dirs.pick_random()
 	start_auto_move_timer() #启动自动移动的定时器
 
 ## 启动自动开火的定时器

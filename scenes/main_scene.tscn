@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bsesin4e370x1" path="res://assets/textures/enemy_tag.tres" id="2_pw63i"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
 [ext_resource type="PackedScene" uid="uid://dev6e05bgw733" path="res://components/map/war_map_container.tscn" id="4_6u1mn"]
-[ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/ui/number_text.gd" id="4_pu3yx"]
+[ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/base/number_text.gd" id="4_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
 [ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
 [ext_resource type="Texture2D" uid="uid://bvrgstb8uuham" path="res://assets/textures/num_2.tres" id="7_01n6w"]
@@ -101,7 +101,6 @@ script = ExtResource("4_pu3yx")
 align = 2
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
 _number = 1
-metadata/_custom_type_script = "uid://dywn341o8erji"
 
 [node name="PlayerLifeTag" type="TextureRect" parent="InfoSidebar" unique_id=1085266646]
 layout_mode = 0
@@ -112,7 +111,7 @@ offset_bottom = 333.0
 texture = SubResource("AtlasTexture_r6p65")
 
 [node name="PlayerLifes" type="Control" parent="InfoSidebar/PlayerLifeTag" unique_id=1108112189]
-custom_minimum_size = Vector2(16, 13)
+custom_minimum_size = Vector2(12, 13)
 anchors_preset = 0
 offset_left = 22.0
 offset_top = 21.0
@@ -120,8 +119,7 @@ offset_right = 62.0
 offset_bottom = 37.0
 script = ExtResource("4_pu3yx")
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
-_number = 2
-metadata/_custom_type_script = "uid://dywn341o8erji"
+_number = 3
 
 [node name="TextureRect" type="TextureRect" parent="InfoSidebar" unique_id=534185155]
 layout_mode = 0
@@ -140,7 +138,6 @@ offset_right = 63.0
 offset_bottom = 37.0
 script = ExtResource("4_pu3yx")
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
-metadata/_custom_type_script = "uid://dywn341o8erji"
 
 [node name="ContainerSplitLine" type="ColorRect" parent="InfoSidebar" unique_id=1837881889]
 layout_mode = 0
@@ -180,5 +177,7 @@ shape = SubResource("RectangleShape2D_q2oxf")
 
 [node name="GameOver" type="Sprite2D" parent="." unique_id=1277183493]
 visible = false
-position = Vector2(224, 224)
+z_index = 4096
+position = Vector2(224, 500)
+scale = Vector2(2, 2)
 texture = SubResource("AtlasTexture_01n6w")
