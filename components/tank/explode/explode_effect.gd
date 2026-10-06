@@ -3,6 +3,9 @@ extends AnimatedSprite2D
 ## 爆炸特效
 class_name ExplodeEffect
 
+## 爆炸完成的事件消息
+signal explode_finished()
+
 ## 是否是大型爆炸
 @export
 var is_big_explode: bool
@@ -16,6 +19,9 @@ func _process(_delta: float) -> void:
 	pass
 
 func _on_animation_finished() -> void:
+	explode_finished.emit() #停止爆炸事件完成
+	set_deferred('visible', false)
+	await get_tree().create_timer(0.5).timeout
 	queue_free() #爆炸完成，从子节点删除
 
 ## 创建一个实例

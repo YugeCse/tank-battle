@@ -75,3 +75,12 @@ enum LifeState {
 	alive,
 	death
 }
+
+## 游戏状态枚举
+enum GameState {
+	idle,
+	playing,
+	pause,
+	game_win,
+	game_over
+}

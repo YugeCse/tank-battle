@@ -4,6 +4,9 @@ extends CharacterBody2D
 ## 坦克类
 class_name Tank
 
+## 坦克爆炸完成事件
+signal explode_finished()
+
 ## 是否允许被控制
 @export
 var allow_control: bool
@@ -290,13 +293,20 @@ func attacked(attached_point: int) -> void:
 
 ## 显示爆炸销毁状态
 func show_explode_destroy_effect() -> void:
+	set_deferred('visible', false)
 	_life_state = GameEnums.LifeState.death
 	_collision_shape.set_deferred('disabled', true)
-	queue_free() #从节点中删除
 	var explode_effect = ExplodeEffect\
 		.create(position, true)
 	explode_effect.z_index = z_index
 	GameGlobals.add_child_to_war_map.emit(explode_effect)
+	explode_effect.explode_finished.connect(_on_explode_finished)
+
+## 爆炸完成，通知外部事件
+func _on_explode_finished() -> void:
+	explode_finished.emit()
+	await get_tree().create_timer(0.5).timeout
+	queue_free() #从节点中删除
 
 ## 启动自动移动的定时器
 func start_auto_move_timer(wait_time: Variant = null) -> void:

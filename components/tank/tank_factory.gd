@@ -48,7 +48,7 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, GameGlobals.GAME_MAP_SIZE), Color.BLACK)
 
 # 生成玩家坦克
-func generate_player_tank() -> void:
+func generate_player_tank(explode_finished: Callable) -> void:
 	var tank = Tank.create( \
 		GameEnums.TankType.player, \
 		player_born_position, Vector2.UP)
@@ -57,6 +57,7 @@ func generate_player_tank() -> void:
 	tank.set_capabilities([ \
 		# CapabilityProperty.Ferry.new(), \
 		CapabilityProperty.ProtectClothes.new() ])
+	tank.explode_finished.connect(explode_finished)
 	GameGlobals.add_child_to_war_map.emit(tank)
 
 ## 生成敌方的坦克

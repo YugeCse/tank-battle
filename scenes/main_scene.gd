@@ -44,6 +44,7 @@ func _enter_tree() -> void:
 		.connect(func(e): _on_add_child_to_war_map(e)) #添加新节点到地图中
 	_tank_factory.on_born_one_enemy_tank \
 		.connect(_remove_one_from_enemy_grids) #如果生产一个敌方坦克，移除一个标志
+	GameGlobals.set_game_state(GameEnums.GameState.playing) #设置游戏状态为游玩中
 
 func _ready() -> void:
 	_stage_level.set_number(\
@@ -67,7 +68,7 @@ func _process(delta: float) -> void:
 		if _statistics_none_tank_time < 6.0 or \
 			_game_enter_win_status: return
 		_game_enter_win_status = true #标记游戏已经赢了
-		print('游戏结束，跳转到新的界面')
+		_on_game_win() #游戏获得胜利
 	else: _statistics_none_tank_time = 0.0
 
 ## 播放开始游戏的音频
@@ -113,6 +114,9 @@ func _layout_map_tiles(map_data: Array) -> void:
 			var map_tile = MapTile.create(location)
 			map_tile.set_map_title_type(type)
 			map_tile.set_render_index(0)
+			if type == GameEnums.MapTileType.home:
+				map_tile.player_master_explode_finished \
+					.connect(_show_game_over_tag)
 			_map_container.add_child(map_tile)
 
 ## 生成敌方表格数据
@@ -139,13 +143,20 @@ func _clear_enemy_grids_in_container() -> void:
 	for enemy_tag in _enemy_grid_container.get_children():
 		enemy_tag.queue_free()
 
+## 游戏胜利
+func _on_game_win() -> void:
+	print('游戏胜利✌️')
+	# TODO 填转到数据结算页面
+
 ## 显示游戏结束的标记
 func _show_game_over_tag() -> void:
+	print('游戏结束😭')
 	_game_over_tag.set_deferred("visible", true)
 	var tween = get_tree().create_tween()
 	tween.finished.connect(func(): _show_game_over_flinker_effect())
 	tween.tween_property(_game_over_tag, "position",\
 		Vector2(_game_over_tag.position.x, GameGlobals.GAME_MAP_CONTAINER_SIZE.y / 2.0), 2.0)
+	GameGlobals.set_game_state(GameEnums.GameState.game_over) #设置当前游戏已经结束
 
 ## 显示游戏结束 TAG 的效果
 func _show_game_over_flinker_effect() -> void:
@@ -156,16 +167,13 @@ func _show_game_over_flinker_effect() -> void:
 	tween.tween_property(_game_over_tag, "modulate:a", 0, 0.5)
 	tween.tween_property(_game_over_tag, "modulate:a", 1.0, 0.5)
 
-# 生成玩家坦克
+## 生成玩家坦克
 func _generate_player_tank() -> void:
-	var born_position = Vector2( \
-		GameGlobals.GAME_MAP_SIZE.x / 2.0 - 48.0, \
-		GameGlobals.GAME_MAP_SIZE.y - 16.0)
-	var player_tank = Tank.create( \
-		GameEnums.TankType.player, born_position, Vector2.UP)
-	player_tank.allow_control = true
-	player_tank.set_render_index(100)
-	player_tank.set_capabilities([ \
-		# CapabilityProperty.Ferry.new(), \
-		CapabilityProperty.ProtectClothes.new() ])
-	_map_container.add_child(player_tank)
+	var player_life = \
+		GameGlobals.get_player_life_count()
+	if player_life == 0: #玩家生命数为0
+		_show_game_over_tag() #显示游戏结束的标记
+		return
+	if GameGlobals.decrement_one_player_life(): #减少一条生命数
+		_player_lifes.set_number(GameGlobals.get_player_life_count())
+	_tank_factory.generate_player_tank(_generate_player_tank) #生成新玩家

@@ -4,6 +4,9 @@ extends StaticBody2D
 ## 地砖组件
 class_name MapTile
 
+## 玩家总部爆炸完成
+signal player_master_explode_finished()
+
 ## 地砖的碰撞形状
 @export
 var _collision_shape: CollisionShape2D
@@ -43,6 +46,7 @@ func set_map_title_type(type: GameEnums.MapTileType) -> void:
 			set_collision_layer_value(CollisionLayers.layer_map_tile_ice, true)
 		GameEnums.MapTileType.home:
 			z_index = 0 #设置默认层为0
+			set_render_index(0) #设置默认层为0
 			set_collision_layer_value(CollisionLayers.layer_map_tile_master, true)
 	$Sprite2D.texture = GameGlobals.get_map_tile_atlas_texture(type)
 	
@@ -77,6 +81,7 @@ func set_master_boom_status() -> void:
 		audioStreamPlayer.finished \
 			.connect(func(): audioStreamPlayer.queue_free())
 		add_child(audioStreamPlayer)
+	player_master_explode_finished.emit() #玩家爆炸完成事件
 	$Sprite2D.texture = load('res://assets/textures/map_tile_player_home_destroy.tres') as AtlasTexture
 
 ## 创建实例

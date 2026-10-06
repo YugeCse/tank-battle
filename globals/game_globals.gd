@@ -29,22 +29,25 @@ const DEFAULT_BACKGROUND_COLOR = Color("#7e7e7e")
 @warning_ignore('unused_signal')
 signal add_child_to_war_map(child: Node2D)
 
+## 游戏状态
+var _game_state: GameEnums.GameState = GameEnums.GameState.idle
+
 ## 当前关卡
 var _stage_level: int = 1
 
-# 玩家总生命数
+## 玩家总生命数
 var _player_life_count: int = 3
 
-# 敌人总数量
+## 敌人总数量
 var _enemy_total_count: int = 20
 
-# 当前游戏音乐是否可用
+## 当前游戏音乐是否可用
 var _music_available: bool = false
 
-# 当前选择的游戏难度
+## 当前选择的游戏难度
 var _game_level: GameEnums.GameLevel = GameEnums.GameLevel.easy
 
-# 地图图块数据集合
+## 地图图块数据集合
 @onready
 var _map_tile_atlas_texture: Dictionary[GameEnums.MapTileType, AtlasTexture] = {
 	GameEnums.MapTileType.mud_wall: preload("res://assets/textures/map_tile_mud_wall.tres"),
@@ -62,50 +65,64 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	pass
 
-# 设置当前的关卡
+## 设置游戏状态
+func set_game_state(state: GameEnums.GameState):
+	_game_state = state
+
+## 获取游戏状态
+func get_game_state() -> GameEnums.GameState: return _game_state
+
+## 设置当前的关卡
 func set_stage_level(stage: int) -> void:
 	_stage_level = stage
 
-# 获取当前的关卡
+## 获取当前的关卡
 func get_stage_level() -> int: return _stage_level
 
-# 设置玩家生命数
+## 设置玩家生命数
 func set_player_life_count(count: int) -> void:
 	_player_life_count = count
 
-# 获取玩家生命数
+## 获取玩家生命数
 func get_player_life_count() -> int: return _player_life_count
 
-# 增加一条玩家生命数
+## 增加一条玩家生命数
 func increment_one_player_life() -> void:
 	_player_life_count += 1
 
-# 设置敌方总人数
+## 减少一条玩家生命数
+func decrement_one_player_life() -> bool:
+	if _player_life_count <= 0:
+		return false
+	_player_life_count -= 1
+	return true
+
+## 设置敌方总人数
 func set_enemy_total_count(count: int) -> void:
 	_enemy_total_count = count
 
-# 获取敌人的总数量
+## 获取敌人的总数量
 func get_enemy_total_count() -> int: return _enemy_total_count
 
-# 设置音乐状态是否可用
+## 设置音乐状态是否可用
 func set_music_available(available: bool) -> void:
 	_music_available = available
 
-# 获取音乐状态是否可用
+## 获取音乐状态是否可用
 func get_music_available() -> bool: return _music_available
 
-# 设置游戏难度
+## 设置游戏难度
 func set_game_level(target: GameEnums.GameLevel) -> void:
 	_game_level = target
 
-# 获取游戏难度
+## 获取游戏难度
 func get_game_level() -> GameEnums.GameLevel: return _game_level
 
-# 根据地块类型，获取对应的资源
+## 根据地块类型，获取对应的资源
 func get_map_tile_atlas_texture(type: GameEnums.MapTileType) -> AtlasTexture:
 	return _map_tile_atlas_texture[type] as AtlasTexture
 
-# 获取地图数据
+## 获取地图数据
 func get_map_data(stage: int) -> DataResult:
 	var fa = FileAccess.open( \
 		"res://assets/stages/map{0}.json".format([stage]), \
