@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cwrs2bs5acbww"]
 
-[ext_resource type="Script" uid="uid://d0yuatadufu3x" path="res://components/map_tile.gd" id="1_dif2y"]
+[ext_resource type="Script" uid="uid://d0yuatadufu3x" path="res://components/map/map_tile.gd" id="1_dif2y"]
 [ext_resource type="Texture2D" uid="uid://ba8kw64nqbg2b" path="res://assets/textures/map_tile_mud_wall.tres" id="2_synv0"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_si52b"]

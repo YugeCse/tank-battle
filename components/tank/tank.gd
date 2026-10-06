@@ -359,7 +359,7 @@ static func create( \
 	facing_dir: Vector2,
 ) -> Tank:
 	var instance = \
-		(load("res://components/tank.tscn") \
+		(load("res://components/tank/tank.tscn") \
 		as PackedScene).instantiate() as Tank
 	instance.position = location
 	instance.update_sprite(get_tank_atlas_textures(type))

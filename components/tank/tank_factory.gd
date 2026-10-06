@@ -12,9 +12,10 @@ var _debug_mode: bool = false
 @export
 var born_positions: Array[Vector2]
 
-## 地图容器对象
-@export
-var war_map_container: Node
+## 玩家出生的点位
+var player_born_position = Vector2( \
+	GameGlobals.GAME_MAP_SIZE.x / 2.0 - 48.0, \
+	GameGlobals.GAME_MAP_SIZE.y - 16.0)
 
 ## 出生同步锁对象
 var _born_mutex: Mutex = Mutex.new()
@@ -46,24 +47,17 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, GameGlobals.GAME_MAP_SIZE), Color.BLACK)
 
-## 布局出生范围和事件绑定
-func _layout_and_bind_born_areas() -> void:
-	var nodes = get_children() \
-		.filter(func(e): return e is EnemyBornArea)
-	for index in range(0, nodes.size()): #循环生成敌人的出生点位
-		var node = nodes[index] as EnemyBornArea
-		node._debug_mode = _debug_mode
-		node.set_tag(index)
-		node.set_tag_position(born_positions[index])
-		node.on_tank_stay_here.connect(_on_tank_stay_born_area)
-		node.on_none_tank_here.connect(_on_none_tank_stay_born_area)
-
-func _on_tank_stay_born_area(tag: Variant, _location: Vector2) -> void:
-	if _wait_born_positions.has(tag): #如果记录过，则删除这条记录
-		_wait_born_positions.erase(tag)
-
-func _on_none_tank_stay_born_area(tag: Variant, location: Vector2) -> void:
-	_wait_born_positions[tag] = location
+# 生成玩家坦克
+func generate_player_tank() -> void:
+	var tank = Tank.create( \
+		GameEnums.TankType.player, \
+		player_born_position, Vector2.UP)
+	tank.allow_control = true
+	tank.set_render_index(100)
+	tank.set_capabilities([ \
+		# CapabilityProperty.Ferry.new(), \
+		CapabilityProperty.ProtectClothes.new() ])
+	GameGlobals.add_child_to_war_map.emit(tank)
 
 ## 生成敌方的坦克
 func _generate_enemy_tank(born_position: Vector2) -> void:
@@ -102,3 +96,24 @@ func _on_born_timer_timeout() -> void:
 		_wait_born_positions.erase(rand_key)
 		_generate_enemy_tank(born_position) #满足条件时，生成需要的坦克对象
 	_born_mutex.unlock()
+
+## 布局出生范围和事件绑定
+func _layout_and_bind_born_areas() -> void:
+	var nodes = get_children() \
+		.filter(func(e): return e is EnemyBornArea)
+	for index in range(0, nodes.size()): #循环生成敌人的出生点位
+		var node = nodes[index] as EnemyBornArea
+		node._debug_mode = _debug_mode
+		node.set_tag(index)
+		node.set_tag_position(born_positions[index])
+		node.on_tank_stay_here.connect(_on_tank_stay_born_area)
+		node.on_none_tank_here.connect(_on_none_tank_stay_born_area)
+
+## 有坦克待在某个出生点位
+func _on_tank_stay_born_area(tag: Variant, _location: Vector2) -> void:
+	if _wait_born_positions.has(tag): #如果记录过，则删除这条记录
+		_wait_born_positions.erase(tag)
+
+## 没有坦克待在某个出生点位
+func _on_none_tank_stay_born_area(tag: Variant, location: Vector2) -> void:
+	_wait_born_positions[tag] = location

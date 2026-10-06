@@ -3,9 +3,8 @@
 [ext_resource type="Script" uid="uid://bj2m581fkvskh" path="res://scenes/main_scene.gd" id="1_w2twt"]
 [ext_resource type="Texture2D" uid="uid://bsesin4e370x1" path="res://assets/textures/enemy_tag.tres" id="2_pw63i"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
-[ext_resource type="PackedScene" uid="uid://cwrs2bs5acbww" path="res://components/map_tile.tscn" id="3_si52b"]
-[ext_resource type="PackedScene" uid="uid://dev6e05bgw733" path="res://components/war_map_container.tscn" id="4_6u1mn"]
-[ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/number_text.gd" id="4_pu3yx"]
+[ext_resource type="PackedScene" uid="uid://dev6e05bgw733" path="res://components/map/war_map_container.tscn" id="4_6u1mn"]
+[ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/ui/number_text.gd" id="4_pu3yx"]
 [ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
 [ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
 [ext_resource type="Texture2D" uid="uid://bvrgstb8uuham" path="res://assets/textures/num_2.tres" id="7_01n6w"]
@@ -16,7 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://dqjgggajvhtd3" path="res://assets/textures/num_7.tres" id="12_xdqt8"]
 [ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
 [ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
-[ext_resource type="PackedScene" uid="uid://daruekwtti3ei" path="res://components/tank_factory.tscn" id="16_01n6w"]
+[ext_resource type="PackedScene" uid="uid://daruekwtti3ei" path="res://components/tank/tank_factory.tscn" id="16_01n6w"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
 atlas = ExtResource("3_7ykc4")
@@ -55,7 +54,6 @@ _enemy_grid_container = NodePath("InfoSidebar/EnemyGridContainer")
 _stage_level = NodePath("InfoSidebar/StageFlag/StageLevel")
 _player_lifes = NodePath("InfoSidebar/PlayerLifeTag/PlayerLifes")
 _enemy_tank_factory = NodePath("WarMapContainer/TankFactory")
-_map_tile_packed_scene = ExtResource("3_si52b")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
 limit_left = 0

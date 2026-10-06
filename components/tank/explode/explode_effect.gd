@@ -23,8 +23,9 @@ static func create( \
 		location: Vector2, \
 		big_explode: bool = false, \
 ) -> ExplodeEffect:
-	var instance = (load('res://components/explode_effect.tscn') \
-		as PackedScene).instantiate() as ExplodeEffect
+	var instance = ( \
+		load('res://components/tank/explode/explode_effect.tscn') \
+			as PackedScene).instantiate() as ExplodeEffect
 	instance.position = location
 	instance.is_big_explode = big_explode
 	return instance

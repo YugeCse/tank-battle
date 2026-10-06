@@ -74,7 +74,7 @@ func get_tag_position() -> Vector2: return _tag_position
 
 ## 创建实例
 static func create(born_position: Vector2) -> EnemyBornArea:
-	var instance = (load('res://components/enemy_born_area.tscn') \
+	var instance = (load('res://components/tank/enemy_born_area.tscn') \
 		as PackedScene).instantiate() as EnemyBornArea
 	instance.set_tag_position(born_position)
 	return instance

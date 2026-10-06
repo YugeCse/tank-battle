@@ -42,6 +42,7 @@ func set_map_title_type(type: GameEnums.MapTileType) -> void:
 			set_collision_mask_value(CollisionLayers.layer_player_tank, false)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_ice, true)
 		GameEnums.MapTileType.home:
+			z_index = 0 #设置默认层为0
 			set_collision_layer_value(CollisionLayers.layer_map_tile_master, true)
 	$Sprite2D.texture = GameGlobals.get_map_tile_atlas_texture(type)
 	
@@ -77,3 +78,10 @@ func set_master_boom_status() -> void:
 			.connect(func(): audioStreamPlayer.queue_free())
 		add_child(audioStreamPlayer)
 	$Sprite2D.texture = load('res://assets/textures/map_tile_player_home_destroy.tres') as AtlasTexture
+
+## 创建实例
+static func create(location: Vector2) -> MapTile:
+	var instance = (load('res://components/map/map_tile.tscn') \
+		as PackedScene).instantiate() as MapTile
+	instance.position = location
+	return instance

@@ -127,7 +127,7 @@ static func create( \
 	location: Vector2, \
 	move_dir: Vector2, \
 	sender: GameEnums.TankType) -> Bullet:
-	var instance = (load('res://components/bullet.tscn') \
+	var instance = (load('res://components/tank/bullet.tscn') \
 		as PackedScene).instantiate() as Bullet
 	instance.set_sender(sender)
 	instance.set_run_dir(move_dir)

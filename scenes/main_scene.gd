@@ -30,9 +30,6 @@ var _enemy_tank_factory: TankFactory
 
 var _enemy_tank_factory_mutex: Mutex = Mutex.new()
 
-@export
-var _map_tile_packed_scene: PackedScene
-
 func _enter_tree() -> void:
 	if Engine.is_editor_hint(): return
 	GameGlobals.add_child_to_war_map \
@@ -90,12 +87,11 @@ func _layout_map_tiles(map_data: Array) -> void:
 			var type = GameEnums.all_map_tile_types \
 				.filter(func(t): return t == dat)[0] \
 					as GameEnums.MapTileType
-			var map_tile = _map_tile_packed_scene \
-				.instantiate() as MapTile
-			map_tile.set_map_title_type(type)
-			map_tile.position = Vector2( \
+			var location = Vector2( \
 				column * GameGlobals.GAME_MAP_TILE_SIZE, \
 				row * GameGlobals.GAME_MAP_TILE_SIZE)
+			var map_tile = MapTile.create(location)
+			map_tile.set_map_title_type(type)
 			map_tile.set_render_index(0)
 			_map_container.add_child(map_tile)
 

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://daruekwtti3ei"]
+
+[ext_resource type="Script" uid="uid://dhvbf7gxbcs0c" path="res://components/tank/tank_factory.gd" id="1_7g4sg"]
+[ext_resource type="PackedScene" uid="uid://2ulvib5413vo" path="res://components/tank/enemy_born_area.tscn" id="2_dqrq3"]
+
+[node name="TankFactory" type="Node2D" unique_id=2064319392]
+script = ExtResource("1_7g4sg")
+born_positions = Array[Vector2]([Vector2(16, 16), Vector2(208, 16), Vector2(400, 16)])
+
+[node name="BornTimer" type="Timer" parent="." unique_id=1004852767]
+autostart = true
+
+[node name="LeftBornArea" parent="." unique_id=1069849018 instance=ExtResource("2_dqrq3")]
+position = Vector2(16, 16)
+
+[node name="CenterBornArea2" parent="." unique_id=93019445 instance=ExtResource("2_dqrq3")]
+position = Vector2(208, 16)
+
+[node name="RightBornArea3" parent="." unique_id=969353580 instance=ExtResource("2_dqrq3")]
+position = Vector2(400, 16)
+
+[connection signal="timeout" from="BornTimer" to="." method="_on_born_timer_timeout"]

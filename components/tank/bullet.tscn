@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dv5shuvc1nwlg"]
 
-[ext_resource type="Script" uid="uid://cxkqp2shfpmoe" path="res://components/bullet.gd" id="1_jdofu"]
+[ext_resource type="Script" uid="uid://cxkqp2shfpmoe" path="res://components/tank/bullet.gd" id="1_jdofu"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="2_omyih"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jdofu"]

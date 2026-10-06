@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://2ulvib5413vo"]
 
-[ext_resource type="Script" uid="uid://dpfj0h6yijvyp" path="res://components/enemy_born_area.gd" id="1_thyuw"]
+[ext_resource type="Script" uid="uid://dpfj0h6yijvyp" path="res://components/tank/enemy_born_area.gd" id="1_thyuw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
 size = Vector2(32, 32)

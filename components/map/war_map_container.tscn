@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dev6e05bgw733"]
 
-[ext_resource type="Script" uid="uid://ci0gbi4lnchkw" path="res://components/war_map_container.gd" id="1_73fcd"]
+[ext_resource type="Script" uid="uid://ci0gbi4lnchkw" path="res://components/map/war_map_container.gd" id="1_73fcd"]
 
 [node name="WarMapContainer" type="Node2D" unique_id=198177823]
 script = ExtResource("1_73fcd")
