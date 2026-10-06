@@ -1,40 +1,48 @@
 @tool
 extends Node2D
 
-# 地图容器
+## 地图容器
 @export
 var _map_container: Node2D
 
-# 游戏结束的标记精灵
+## 游戏结束的标记精灵
 @export
 var _game_over_tag: Sprite2D
 
-# 敌人标志资源
+## 敌人标志资源
 @export
 var _enemy_tag_atlas: AtlasTexture
 
-# 敌人表格数据
+## 敌人表格数据
 @export
 var _enemy_grid_container: GridContainer
 
-# 关卡组件
+## 关卡组件
 @export
 var _stage_level: NumberText
 
-# 玩家生命组件
+## 玩家生命组件
 @export
 var _player_lifes: NumberText
 
+## 坦克生成工厂
 @export
-var _enemy_tank_factory: TankFactory
+var _tank_factory: TankFactory
 
-var _enemy_tank_factory_mutex: Mutex = Mutex.new()
+## 坦克工厂同步对象
+var _tank_factory_mutex: Mutex = Mutex.new()
+
+## 游戏进入赢了的状态
+var _game_enter_win_status: bool = false
+
+## 统计无坦克的时长数据
+var _statistics_none_tank_time: float = 0.0
 
 func _enter_tree() -> void:
 	if Engine.is_editor_hint(): return
 	GameGlobals.add_child_to_war_map \
 		.connect(func(e): _on_add_child_to_war_map(e)) #添加新节点到地图中
-	_enemy_tank_factory.on_born_one_enemy_tank \
+	_tank_factory.on_born_one_enemy_tank \
 		.connect(_remove_one_from_enemy_grids) #如果生产一个敌方坦克，移除一个标志
 
 func _ready() -> void:
@@ -50,6 +58,18 @@ func _ready() -> void:
 	_generate_player_tank() #生成玩家坦克
 	_play_start_game_audio() #播放开始游戏的音频
 
+func _process(delta: float) -> void:
+	if _game_enter_win_status: return
+	var enemy_tanks = get_tree() \
+		.get_nodes_in_group(&'enemy_tank')
+	if enemy_tanks.is_empty(): #敌方坦克被清空
+		_statistics_none_tank_time += delta
+		if _statistics_none_tank_time < 6.0 or \
+			_game_enter_win_status: return
+		_game_enter_win_status = true #标记游戏已经赢了
+		print('游戏结束，跳转到新的界面')
+	else: _statistics_none_tank_time = 0.0
+
 ## 播放开始游戏的音频
 func _play_start_game_audio():
 	if Engine.is_editor_hint() or \
@@ -64,8 +84,8 @@ func _on_add_child_to_war_map(node: Node2D) -> void:
 	_map_container.add_child(node)
 
 func _draw() -> void:
-	var visible_rect = get_viewport_rect()
-	draw_rect(visible_rect, Color("#7e7e7e"))
+	draw_rect(get_viewport().get_visible_rect(), \
+		GameGlobals.DEFAULT_BACKGROUND_COLOR)
 
 ## 加载地图数据
 func _load_map_tiles(stage: int) -> void:
@@ -108,11 +128,11 @@ func _generate_enemy_grids() -> void:
 
 ## 从敌人表格中移除一条数据
 func _remove_one_from_enemy_grids() -> void:
-	_enemy_tank_factory_mutex.lock()
+	_tank_factory_mutex.lock()
 	var children = _enemy_grid_container.get_children()
 	if not children.is_empty():
 		_enemy_grid_container.remove_child(children[0])
-	_enemy_tank_factory_mutex.unlock()
+	_tank_factory_mutex.unlock()
 
 ## 清理敌人表格数据
 func _clear_enemy_grids_in_container() -> void:

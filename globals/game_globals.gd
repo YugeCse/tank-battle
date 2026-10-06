@@ -22,6 +22,9 @@ const DEFAULT_ENEMY_COUNT_IN_MAP = 5
 ## 游戏默认玩家生命总数：3
 const DEFAULT_PLAYER_LIFE_COUNT = 3
 
+## 默认背景颜色
+const DEFAULT_BACKGROUND_COLOR = Color("#7e7e7e")
+
 ## 添加子节点到地图节点
 @warning_ignore('unused_signal')
 signal add_child_to_war_map(child: Node2D)

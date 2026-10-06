@@ -45,7 +45,7 @@ size = Vector2(446, 16)
 atlas = ExtResource("3_7ykc4")
 region = Rect2(384, 64, 62, 30)
 
-[node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_map_container", "_game_over_tag", "_enemy_grid_container", "_stage_level", "_player_lifes", "_enemy_tank_factory")]
+[node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_map_container", "_game_over_tag", "_enemy_grid_container", "_stage_level", "_player_lifes", "_tank_factory")]
 script = ExtResource("1_w2twt")
 _map_container = NodePath("WarMapContainer")
 _game_over_tag = NodePath("GameOver")
@@ -53,7 +53,7 @@ _enemy_tag_atlas = ExtResource("2_pw63i")
 _enemy_grid_container = NodePath("InfoSidebar/EnemyGridContainer")
 _stage_level = NodePath("InfoSidebar/StageFlag/StageLevel")
 _player_lifes = NodePath("InfoSidebar/PlayerLifeTag/PlayerLifes")
-_enemy_tank_factory = NodePath("WarMapContainer/TankFactory")
+_tank_factory = NodePath("WarMapContainer/TankFactory")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=726014249]
 limit_left = 0

@@ -47,8 +47,6 @@ func _physics_process(_delta: float) -> void:
 			_on_start_game_button_click()
 		elif Input.is_action_just_pressed(&'ui_menu'):
 			_on_settings_button_click()
-	else:
-		print('菜单页-其他操作 ---> ')
 
 ## 游戏设置按钮点击事件
 func _on_settings_button_click() -> void:
