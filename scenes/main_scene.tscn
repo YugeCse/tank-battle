@@ -112,7 +112,7 @@ offset_bottom = 333.0
 texture = SubResource("AtlasTexture_r6p65")
 
 [node name="PlayerLifes" type="Control" parent="InfoSidebar/PlayerLifeTag" unique_id=1108112189]
-custom_minimum_size = Vector2(12, 13)
+custom_minimum_size = Vector2(16, 13)
 anchors_preset = 0
 offset_left = 22.0
 offset_top = 21.0
@@ -120,7 +120,7 @@ offset_right = 62.0
 offset_bottom = 37.0
 script = ExtResource("4_pu3yx")
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
-_number = 3
+_number = 2
 metadata/_custom_type_script = "uid://dywn341o8erji"
 
 [node name="TextureRect" type="TextureRect" parent="InfoSidebar" unique_id=534185155]

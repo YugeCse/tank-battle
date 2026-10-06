@@ -132,3 +132,11 @@ func get_map_data(stage: int) -> DataResult:
 	var map_json_data = fa.get_as_text()
 	fa.close()
 	return DataResult.ok(JSON.parse_string(map_json_data))
+
+## 获取玩家坦克的设计间隔时间
+func get_player_tank_shoot_span_time(tank: Tank) -> float:
+	var data_result = tank.get_strong_fire_capability()
+	if not data_result.success: return 0.5
+	var strongFireCapability = data_result.value as CapabilityProperty.StrongFire
+	return 0.3 if strongFireCapability.fire_level >= 1 else 0.4
+	

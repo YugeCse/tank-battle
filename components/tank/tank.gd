@@ -29,6 +29,12 @@ var _facing_dir: Vector2 = Vector2.UP
 ## 能力容器
 var _capabilities: Array[CapabilityProperty] = []
 
+## 玩家射击间隔时间
+var _player_shoot_time_span: float = 0.3
+
+## 玩家射击间隔时间统计
+var _player_shoot_time_span_statistics: float = 0.0
+
 ## 坦克精灵
 @export
 var _tank_sprite: Sprite2D
@@ -93,7 +99,14 @@ func _process(delta: float) -> void:
 		elif Input.is_action_pressed('ui_down'):
 			target_dir = Vector2.DOWN
 		if Input.is_action_just_pressed('shoot'):
-			shoot() #执行发射子弹
+			_player_shoot_time_span = GameGlobals \
+				.get_player_tank_shoot_span_time(self)
+			if _player_shoot_time_span_statistics == 0.0 or \
+				_player_shoot_time_span_statistics >= _player_shoot_time_span:
+				if _player_shoot_time_span_statistics >= _player_shoot_time_span:
+					_player_shoot_time_span_statistics = 0.0
+				shoot() #执行发射子弹
+		_player_shoot_time_span_statistics += delta
 	else: target_dir = _auto_move_direction
 	if target_dir != Vector2.ZERO:
 		set_facing_dir(target_dir)
@@ -170,11 +183,25 @@ func get_capabilities() -> Array[CapabilityProperty]: return _capabilities
 
 ## 是否有轮渡能力
 func has_ferry_capability() -> bool:
-	return _capabilities.any(func(e): return e is CapabilityProperty.Ferry)
+	return _capabilities.any(func(e): \
+		return e is CapabilityProperty.Ferry)
 
 ## 是否有保护衣的能力
 func has_protect_clothes() -> bool: 
 	return _capabilities.any(func(e): return e is CapabilityProperty.ProtectClothes)
+
+## 是否有增强火力的能力
+func has_strong_fire_capability() -> bool:
+	return _capabilities.any(func(e): \
+		return e is CapabilityProperty.StrongFire)
+
+## 获取加强火力的能力
+func get_strong_fire_capability() -> DataResult:
+	var capabilities = _capabilities.filter(func(e): \
+		return e is CapabilityProperty.StrongFire)
+	if capabilities.is_empty(): 
+		return DataResult.fail('没有加强火力的能力')
+	return DataResult.ok(capabilities[0])
 
 ## 更新精灵
 func update_sprite( \
