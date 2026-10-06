@@ -65,7 +65,6 @@ limit_bottom = 448
 position = Vector2(16, 16)
 
 [node name="TankFactory" parent="WarMapContainer" unique_id=2064319392 instance=ExtResource("16_01n6w")]
-_debug_mode = true
 
 [node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0

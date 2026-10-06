@@ -116,7 +116,7 @@ func _layout_map_tiles(map_data: Array) -> void:
 			map_tile.set_render_index(0)
 			if type == GameEnums.MapTileType.home:
 				map_tile.player_master_explode_finished \
-					.connect(_show_game_over_tag)
+					.connect(_on_game_over)
 			_map_container.add_child(map_tile)
 
 ## 生成敌方表格数据
@@ -148,8 +148,8 @@ func _on_game_win() -> void:
 	print('游戏胜利✌️')
 	# TODO 填转到数据结算页面
 
-## 显示游戏结束的标记
-func _show_game_over_tag() -> void:
+## 游戏结束
+func _on_game_over() -> void:
 	print('游戏结束😭')
 	_game_over_tag.set_deferred("visible", true)
 	var tween = get_tree().create_tween()
@@ -172,7 +172,7 @@ func _generate_player_tank() -> void:
 	var player_life = \
 		GameGlobals.get_player_life_count()
 	if player_life == 0: #玩家生命数为0
-		_show_game_over_tag() #显示游戏结束的标记
+		_on_game_over() #显示游戏结束的标记
 		return
 	if GameGlobals.decrement_one_player_life(): #减少一条生命数
 		_player_lifes.set_number(GameGlobals.get_player_life_count())
