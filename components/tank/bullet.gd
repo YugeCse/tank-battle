@@ -80,7 +80,18 @@ func set_sender(sender: GameEnums.TankType) -> void:
 ## 设置子弹的所属者，发送者
 func get_sender() -> GameEnums.TankType: return _sender
 
-## 碰撞事件检测
+## 碰撞事件检测1
+func _on_area_entered(area: Area2D) -> void:
+	if area is Bullet: #如果遇到子弹元素，发现类型不同，需要发生碰撞
+		var bullet = area as Bullet
+		if (bullet.get_sender() == GameEnums.TankType.player and\
+				get_sender() != GameEnums.TankType.player) or \
+			((bullet.get_sender() != GameEnums.TankType.player and \
+				get_sender() == GameEnums.TankType.player)):
+			_show_explode_effect()
+			bullet._show_explode_effect()
+
+## 碰撞事件检测2
 func _on_body_entered(body: Node2D) -> void:
 	if body is CharacterBody2D: #如果与实体发生了碰撞
 		if body is Tank: #如果是坦克类型

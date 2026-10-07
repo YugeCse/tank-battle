@@ -9,7 +9,7 @@ enum Align { LEFT, CENTER, RIGHT }
 var align: Align = Align.LEFT
 
 @export 
-var num_tres: Array[AtlasTexture]
+var num_tres: Array[AtlasTexture] = []
 
 @export 
 var _number: int = 0:
@@ -86,15 +86,8 @@ func _preload_resource() -> void:
 	if not (num_tres == null or\
 		num_tres.is_empty()):
 		return
-	num_tres = [
-		load("res://assets/textures/num_0.tres"),
-		load("res://assets/textures/num_1.tres"),
-		load("res://assets/textures/num_2.tres"),
-		load("res://assets/textures/num_3.tres"),
-		load("res://assets/textures/num_4.tres"),
-		load("res://assets/textures/num_5.tres"),
-		load("res://assets/textures/num_6.tres"),
-		load("res://assets/textures/num_7.tres"),
-		load("res://assets/textures/num_8.tres"),
-		load("res://assets/textures/num_9.tres"),
-	]
+	num_tres.clear()
+	for i in range(0, 10): #循环加载数字资源
+		var num_tres_name = \
+			"res://assets/textures/ui/nums/num_{0}.tres".format([i])
+		num_tres.append(load(num_tres_name) as AtlasTexture)

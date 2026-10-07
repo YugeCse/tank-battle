@@ -56,7 +56,7 @@ func generate_player_tank(explode_finished: Callable) -> void:
 	tank.set_render_index(100)
 	tank.set_capabilities([ \
 		# CapabilityProperty.Ferry.new(), \
-		CapabilityProperty.ProtectClothes.new() ])
+		CapabilityProperty.ProtectClothes.new(10.0) ])
 	tank.explode_finished.connect(explode_finished)
 	GameGlobals.add_child_to_war_map.emit(tank)
 

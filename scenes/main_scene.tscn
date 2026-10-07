@@ -5,16 +5,17 @@
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="3_7ykc4"]
 [ext_resource type="PackedScene" uid="uid://dev6e05bgw733" path="res://components/map/war_map_container.tscn" id="4_6u1mn"]
 [ext_resource type="Script" uid="uid://dywn341o8erji" path="res://components/base/number_text.gd" id="4_pu3yx"]
-[ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/num_0.tres" id="5_r6p65"]
-[ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/num_1.tres" id="6_si52b"]
-[ext_resource type="Texture2D" uid="uid://bvrgstb8uuham" path="res://assets/textures/num_2.tres" id="7_01n6w"]
-[ext_resource type="Texture2D" uid="uid://f4d7767007tx" path="res://assets/textures/num_3.tres" id="8_6u1mn"]
-[ext_resource type="Texture2D" uid="uid://cnchjcijqsnqq" path="res://assets/textures/num_4.tres" id="9_bcnxi"]
-[ext_resource type="Texture2D" uid="uid://clufpgeai735q" path="res://assets/textures/num_5.tres" id="10_7nt27"]
-[ext_resource type="Texture2D" uid="uid://b0leymi1h5r6u" path="res://assets/textures/num_6.tres" id="11_k6f3i"]
-[ext_resource type="Texture2D" uid="uid://dqjgggajvhtd3" path="res://assets/textures/num_7.tres" id="12_xdqt8"]
-[ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/num_8.tres" id="13_adb74"]
-[ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/num_9.tres" id="14_58gk3"]
+[ext_resource type="PackedScene" uid="uid://dw4s26xdgke2j" path="res://components/tank/prop/tank_prop_factory.tscn" id="5_6u1mn"]
+[ext_resource type="Texture2D" uid="uid://cqqfaesi6qjq4" path="res://assets/textures/ui/nums/num_0.tres" id="5_r6p65"]
+[ext_resource type="Texture2D" uid="uid://bj46t3aa1y4qq" path="res://assets/textures/ui/nums/num_1.tres" id="6_si52b"]
+[ext_resource type="Texture2D" uid="uid://bvrgstb8uuham" path="res://assets/textures/ui/nums/num_2.tres" id="7_01n6w"]
+[ext_resource type="Texture2D" uid="uid://f4d7767007tx" path="res://assets/textures/ui/nums/num_3.tres" id="8_6u1mn"]
+[ext_resource type="Texture2D" uid="uid://cnchjcijqsnqq" path="res://assets/textures/ui/nums/num_4.tres" id="9_bcnxi"]
+[ext_resource type="Texture2D" uid="uid://clufpgeai735q" path="res://assets/textures/ui/nums/num_5.tres" id="10_7nt27"]
+[ext_resource type="Texture2D" uid="uid://b0leymi1h5r6u" path="res://assets/textures/ui/nums/num_6.tres" id="11_k6f3i"]
+[ext_resource type="Texture2D" uid="uid://dqjgggajvhtd3" path="res://assets/textures/ui/nums/num_7.tres" id="12_xdqt8"]
+[ext_resource type="Texture2D" uid="uid://cshlf84qkf4w1" path="res://assets/textures/ui/nums/num_8.tres" id="13_adb74"]
+[ext_resource type="Texture2D" uid="uid://txo8is18e7yr" path="res://assets/textures/ui/nums/num_9.tres" id="14_58gk3"]
 [ext_resource type="PackedScene" uid="uid://daruekwtti3ei" path="res://components/tank/tank_factory.tscn" id="16_01n6w"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pw63i"]
@@ -66,6 +67,8 @@ position = Vector2(16, 16)
 
 [node name="TankFactory" parent="WarMapContainer" unique_id=2064319392 instance=ExtResource("16_01n6w")]
 
+[node name="TankPropFactory" parent="WarMapContainer" unique_id=174640053 instance=ExtResource("5_6u1mn")]
+
 [node name="InfoSidebar" type="ColorRect" parent="." unique_id=1007272814]
 offset_left = 448.0
 offset_right = 512.0
@@ -111,7 +114,7 @@ offset_bottom = 333.0
 texture = SubResource("AtlasTexture_r6p65")
 
 [node name="PlayerLifes" type="Control" parent="InfoSidebar/PlayerLifeTag" unique_id=1108112189]
-custom_minimum_size = Vector2(12, 13)
+custom_minimum_size = Vector2(16, 13)
 anchors_preset = 0
 offset_left = 22.0
 offset_top = 21.0
@@ -119,7 +122,7 @@ offset_right = 62.0
 offset_bottom = 37.0
 script = ExtResource("4_pu3yx")
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
-_number = 3
+_number = 2
 
 [node name="TextureRect" type="TextureRect" parent="InfoSidebar" unique_id=534185155]
 layout_mode = 0
@@ -178,6 +181,6 @@ shape = SubResource("RectangleShape2D_q2oxf")
 [node name="GameOver" type="Sprite2D" parent="." unique_id=1277183493]
 visible = false
 z_index = 4096
-position = Vector2(224, 500)
+position = Vector2(224, 224)
 scale = Vector2(2, 2)
 texture = SubResource("AtlasTexture_01n6w")

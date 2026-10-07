@@ -3,10 +3,6 @@
 [ext_resource type="Script" uid="uid://cxkqp2shfpmoe" path="res://components/tank/bullet.gd" id="1_jdofu"]
 [ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="2_omyih"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_jdofu"]
-atlas = ExtResource("2_omyih")
-region = Rect2(81, 96, 4, 5)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_omyih"]
 atlas = ExtResource("2_omyih")
 region = Rect2(87, 97, 4, 5)
@@ -18,6 +14,10 @@ region = Rect2(92, 97, 5, 4)
 [sub_resource type="AtlasTexture" id="AtlasTexture_qxjua"]
 atlas = ExtResource("2_omyih")
 region = Rect2(99, 97, 5, 4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jdofu"]
+atlas = ExtResource("2_omyih")
+region = Rect2(81, 96, 4, 5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
 size = Vector2(5, 6)
@@ -43,4 +43,5 @@ shape = SubResource("RectangleShape2D_85042")
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1677996790]
 playback_type = 1
 
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

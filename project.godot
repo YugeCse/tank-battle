@@ -130,6 +130,7 @@ pointing/emulate_touch_from_mouse=true
 2d_physics/layer_10="map_tile_ice"
 2d_physics/layer_11="map_tile_master"
 2d_physics/layer_12="enemy_born_area"
+2d_physics/layer_13="tank_prop"
 
 [physics]
 

@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://d4bltihjuk4qm"]
+
+[ext_resource type="Script" uid="uid://bfgouww5wlrg0" path="res://components/tank/prop/tank_prop.gd" id="1_eqfub"]
+[ext_resource type="Texture2D" uid="uid://dits5v13f7u6t" path="res://assets/textures/tankAll.png" id="2_lwih0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eqfub"]
+atlas = ExtResource("2_lwih0")
+region = Rect2(256, 110, 30, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_85042"]
+size = Vector2(30, 28)
+
+[node name="TankProp" type="Area2D" unique_id=1480966401 node_paths=PackedStringArray("_sprite", "_collision_shape")]
+collision_layer = 4096
+collision_mask = 6
+script = ExtResource("1_eqfub")
+_type = 5
+_sprite = NodePath("Sprite2D")
+_collision_shape = NodePath("CollisionShape2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1152764100]
+texture = SubResource("AtlasTexture_eqfub")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=198183904]
+shape = SubResource("RectangleShape2D_85042")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

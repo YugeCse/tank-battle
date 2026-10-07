@@ -228,6 +228,10 @@ func shoot() -> void:
 		location, _facing_dir, _tank_type)
 	GameGlobals.add_child_to_war_map.emit(bullet)
 
+## 拾取道具
+func fetch_prop(type: GameEnums.TankPropType) -> void:
+	pass
+
 ## 显示出生状态
 func show_born_effect() -> void:
 	_tank_sprite.visible = false
