@@ -5,6 +5,14 @@ extends Node2D
 @export
 var _map_container: Node2D
 
+## 战场地图
+@export
+var _war_map: Node2D
+
+## 战场草地/森林地图容器
+@export
+var _grass_war_map: Node2D
+
 ## 游戏结束的标记精灵
 @export
 var _game_over_tag: Sprite2D
@@ -113,11 +121,12 @@ func _layout_map_tiles(map_data: Array) -> void:
 				row * GameGlobals.GAME_MAP_TILE_SIZE)
 			var map_tile = MapTile.create(location)
 			map_tile.set_map_title_type(type)
-			map_tile.set_render_index(0)
 			if type == GameEnums.MapTileType.home:
 				map_tile.player_master_explode_finished \
 					.connect(_on_game_over)
-			_map_container.add_child(map_tile)
+			if type != GameEnums.MapTileType.grass:
+				_war_map.add_child(map_tile)
+			else: _grass_war_map.add_child(map_tile)
 
 ## 生成敌方表格数据
 func _generate_enemy_grids() -> void:

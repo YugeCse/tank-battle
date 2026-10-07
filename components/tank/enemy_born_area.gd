@@ -58,11 +58,13 @@ func _clear_invalid_objects() -> void:
 ## 判断是否存在空地
 func has_empty_place() -> bool:
 	return _collision_tanks.is_empty()
-	
-func set_tag(tag: Variant) -> void:
+
+## 设置tag信息
+func set_tag_variant(tag: Variant) -> void:
 	_tag = tag
 
-func get_tag() -> Variant: return _tag
+## 获取tag信息
+func get_tag_variant() -> Variant: return _tag
 
 ## 设置判断位置
 func set_tag_position(location: Vector2) -> void:

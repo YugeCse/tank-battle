@@ -7,11 +7,10 @@
 rough = true
 absorbent = true
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_synv0"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_epjww"]
 size = Vector2(16, 16)
 
 [node name="MapTile" type="StaticBody2D" unique_id=1403485562 node_paths=PackedStringArray("_collision_shape")]
-z_index = 4096
 collision_layer = 0
 collision_mask = 30
 physics_material_override = SubResource("PhysicsMaterial_si52b")
@@ -25,4 +24,4 @@ centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=178070397]
 position = Vector2(8, 8)
-shape = SubResource("RectangleShape2D_synv0")
+shape = SubResource("RectangleShape2D_epjww")

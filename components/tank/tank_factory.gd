@@ -58,7 +58,7 @@ func generate_player_tank(explode_finished: Callable) -> void:
 		# CapabilityProperty.Ferry.new(), \
 		CapabilityProperty.ProtectClothes.new(10.0) ])
 	tank.explode_finished.connect(explode_finished)
-	GameGlobals.add_child_to_war_map.emit(tank)
+	add_child(tank) #添加到坦克工厂节点
 
 ## 生成敌方的坦克
 func _generate_enemy_tank(born_position: Vector2) -> void:
@@ -67,7 +67,7 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 		GameEnums.TankType.enemy, born_position, Vector2.DOWN)
 	tank.set_render_index(1000)
 	on_born_one_enemy_tank.emit()
-	GameGlobals.add_child_to_war_map.emit(tank) #添加生成的坦克到子节点
+	add_child(tank) #添加生成的坦克到子节点
 
 ## 执行生成坦克的定时器回调
 func _on_born_timer_timeout() -> void:
@@ -100,12 +100,13 @@ func _on_born_timer_timeout() -> void:
 
 ## 布局出生范围和事件绑定
 func _layout_and_bind_born_areas() -> void:
+	if Engine.is_editor_hint(): return
 	var nodes = get_children() \
 		.filter(func(e): return e is EnemyBornArea)
 	for index in range(0, nodes.size()): #循环生成敌人的出生点位
 		var node = nodes[index] as EnemyBornArea
 		node._debug_mode = _debug_mode
-		node.set_tag(index)
+		node.set_tag_variant(index)
 		node.set_tag_position(born_positions[index])
 		node.on_tank_stay_here.connect(_on_tank_stay_born_area)
 		node.on_none_tank_here.connect(_on_none_tank_stay_born_area)

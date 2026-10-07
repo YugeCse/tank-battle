@@ -22,7 +22,6 @@ func _ready() -> void:
 	timer.wait_time = 10.0
 	timer.timeout.connect(_show_blink_effect)
 	add_child(timer)
-	_sprite.z_index = RenderingServer.CANVAS_ITEM_Z_MAX
 
 func _process(_delta: float) -> void:
 	pass
@@ -30,6 +29,7 @@ func _process(_delta: float) -> void:
 ## 设置道具类型
 func set_prop_type(type: GameEnums.TankPropType) -> void:
 	_type = type
+	_sprite.z_index = RenderingServer.CANVAS_ITEM_Z_MAX
 	var type_name = GameEnums.get_tank_prop_name(type)
 	_sprite.texture = load('res://assets/textures/props/prop_{0}.tres'.format([type_name]))
 

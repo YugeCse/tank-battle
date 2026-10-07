@@ -3,4 +3,5 @@
 [ext_resource type="Script" uid="uid://ddbmrapqkjvht" path="res://components/tank/prop/tank_prop_factory.gd" id="1_t6dfb"]
 
 [node name="TankPropFactory" type="Node2D" unique_id=174640053]
+visible = false
 script = ExtResource("1_t6dfb")

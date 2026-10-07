@@ -20,10 +20,6 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	pass
-	
-## 设置渲染层级
-func set_render_index(index: int) -> void:
-	$Sprite2D.z_index = index
 
 ## 设置地砖的类型
 func set_map_title_type(type: GameEnums.MapTileType) -> void:
@@ -34,7 +30,7 @@ func set_map_title_type(type: GameEnums.MapTileType) -> void:
 		GameEnums.MapTileType.steel_wall:
 			set_collision_layer_value(CollisionLayers.layer_map_tile_steel_wall, true)
 		GameEnums.MapTileType.grass:
-			z_index = 99999 #设置尽量大的数据
+			z_index = RenderingServer.CANVAS_ITEM_Z_MAX #设置尽量大的数据
 			set_collision_mask_value(CollisionLayers.layer_player_tank, false)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_ice, true)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_grass, false)
@@ -45,16 +41,13 @@ func set_map_title_type(type: GameEnums.MapTileType) -> void:
 			set_collision_mask_value(CollisionLayers.layer_player_tank, false)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_ice, true)
 		GameEnums.MapTileType.home:
-			z_index = 0 #设置默认层为0
-			set_render_index(0) #设置默认层为0
 			set_collision_layer_value(CollisionLayers.layer_map_tile_master, true)
 	$Sprite2D.texture = GameGlobals.get_map_tile_atlas_texture(type)
-	
 	var shape = RectangleShape2D.new()
 	shape.size = $Sprite2D.texture.get_size()
 	_collision_shape.shape = shape
 	_collision_shape.position = shape.size / 2.0
-	z_index = 0 if type == GameEnums.MapTileType.grass else RenderingServer.CANVAS_ITEM_Z_MAX
+	z_index = 0 if type != GameEnums.MapTileType.grass else RenderingServer.CANVAS_ITEM_Z_MAX
 
 ## 获取地砖类型
 func get_map_tile_type() -> GameEnums.MapTileType: return _tile_type
