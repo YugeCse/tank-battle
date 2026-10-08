@@ -31,8 +31,7 @@ func generate_prop() -> void:
 	var data_result = _generate_random_prop()
 	if not data_result.success: return
 	if _exists_prop: #如果道具已经存在了，需要移除已有的
-		if is_instance_valid(_exists_prop):
-			_exists_prop.queue_free()
+		_exists_prop._on_free_object()
 		_exists_prop = null
 	var prop_type = data_result.value
 	var generate_area = Rect2(Vector2(15, 14), \
