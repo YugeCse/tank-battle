@@ -197,10 +197,11 @@ func _generate_player_tank() -> void:
 	_tank_factory.generate_player_tank(_generate_player_tank) # 生成新玩家
 
 ## 坦克增援
-func _on_tank_reinfocements(type: GameEnums.TankType) -> void:
+func _on_tank_reinforcements(type: GameEnums.TankType) -> void:
 	if type != GameEnums.TankType.player:
 		_add_one_enemy_tag_to_grid()
 		return
+	print('玩家增加一条生命数！')
 	GameGlobals.increment_one_player_life()
 	_player_lifes.set_number(GameGlobals.get_player_life_count())
 		

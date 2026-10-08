@@ -262,6 +262,7 @@ func fetch_prop(type: GameEnums.TankPropType) -> void:
 			pass
 		GameEnums.TankPropType.reinforcements: #增加增援
 			tank_reinforcements.emit(_tank_type) #添加一个敌人的坦克
+	print('拾取道具: {0}'.format([GameEnums.get_tank_prop_type_description(type)]))
 
 ## 显示出生状态
 func show_born_effect() -> void:

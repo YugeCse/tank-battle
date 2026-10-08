@@ -8,7 +8,7 @@ class_name TankFactory
 signal red_tank_attacked()
 
 ## 敌人增加增援
-signal enemy_tank_reinforcements()
+signal tank_reinforcements()
 
 ## 是否开启debug模式
 @export
@@ -87,11 +87,15 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 		tank.set_red_blink_times(times)
 		tank.red_tank_attacked \
 			.connect(func(): red_tank_attacked.emit())
-	tank.enemy_tank_reinforcements \
-		.connect(func(): _born_total_count += 1; \
-			enemy_tank_reinforcements.emit())
+	tank.tank_reinforcements.connect(_on_tank_reinforcements)
 	add_child(tank) # 添加生成的坦克到子节点
 	on_born_one_enemy_tank.emit() # 发送事件，标记生产了一个敌人坦克
+
+## 增加坦克救援
+func _on_tank_reinforcements(type: GameEnums.TankType) -> void:
+	if type != GameEnums.TankType.player:
+		_born_total_count += 1
+	tank_reinforcements.emit(type) #提交事件
 
 ## 执行生成坦克的定时器回调
 func _on_born_timer_timeout() -> void:
