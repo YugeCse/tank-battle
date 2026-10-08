@@ -7,6 +7,9 @@ class_name TankFactory
 ## 红坦克收到攻击时的反馈事件
 signal red_tank_attacked()
 
+## 敌人增加增援
+signal enemy_tank_reinforcements()
+
 ## 是否开启debug模式
 @export
 var _debug_mode: bool = false
@@ -84,6 +87,9 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 		tank.set_red_blink_times(times)
 		tank.red_tank_attacked \
 			.connect(func(): red_tank_attacked.emit())
+	tank.enemy_tank_reinforcements \
+		.connect(func(): _born_total_count += 1; \
+			enemy_tank_reinforcements.emit())
 	add_child(tank) # 添加生成的坦克到子节点
 	on_born_one_enemy_tank.emit() # 发送事件，标记生产了一个敌人坦克
 

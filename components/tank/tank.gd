@@ -10,6 +10,9 @@ signal explode_finished()
 ## 红坦克收到攻击时的反馈事件
 signal red_tank_attacked()
 
+## 敌方坦克增援
+signal tank_reinforcements(type: GameEnums.TankType)
+
 ## 是否允许被控制
 @export
 var allow_control: bool
@@ -237,10 +240,17 @@ func shoot() -> void:
 ## 拾取道具
 func fetch_prop(type: GameEnums.TankPropType) -> void:
 	match type:
-		GameEnums.TankPropType.star:
+		GameEnums.TankPropType.timer: #定时器
 			pass
-		GameEnums.TankPropType.bomb:
+		GameEnums.TankPropType.star: #五角星
 			pass
+		GameEnums.TankPropType.bomb: #炸弹处理
+			if _tank_type == GameEnums.TankType.player:
+				var tanks = get_tree().get_nodes_in_group(&'enemy_tank')
+				for tank in tanks: (tank as Tank).show_explode_destroy_effect()
+			else: 
+				var tanks = get_tree().get_nodes_in_group(&'player_tank')
+				for tank in tanks: (tank as Tank).show_explode_destroy_effect()
 		GameEnums.TankPropType.hat: # 获得保护帽
 			if has_protect_clothes():
 				var capas = _capabilities.filter(func(e): \
@@ -248,10 +258,10 @@ func fetch_prop(type: GameEnums.TankPropType) -> void:
 				for capa in capas: _capabilities.erase(capa)
 			_capabilities.append(CapabilityProperty.ProtectClothes.new())
 			show_protected_effect() # 添加保护特效
-		GameEnums.TankPropType.master_defense:
+		GameEnums.TankPropType.master_defense: #总部防御
 			pass
-		GameEnums.TankPropType.reinforcements:
-			pass
+		GameEnums.TankPropType.reinforcements: #增加增援
+			tank_reinforcements.emit(_tank_type) #添加一个敌人的坦克
 
 ## 显示出生状态
 func show_born_effect() -> void:

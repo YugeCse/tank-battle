@@ -17,10 +17,7 @@ var _generate_weights: Dictionary[GameEnums.TankPropType, int] = _DEFAULT_WEIGHT
 ## 存在的道具
 var _exists_prop: TankProp
 
-func _ready() -> void:
-	randomize()
-	await get_tree().create_timer(3.0).timeout
-	generate_prop()
+func _ready() -> void: randomize()
 
 func _process(_delta: float) -> void:
 	pass

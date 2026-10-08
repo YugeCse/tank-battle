@@ -52,6 +52,8 @@ func _enter_tree() -> void:
 		$WarMapContainer/TankPropFactory.generate_prop())
 	_tank_factory.on_born_one_enemy_tank \
 		.connect(_remove_one_from_enemy_grids) # 如果生产一个敌方坦克，移除一个标志
+	_tank_factory.tank_reinforcements \
+		.connect(_on_tank_reinforcements) #添加一个敌人标记
 	GameGlobals.add_child_to_war_map \
 		.connect(func(e): _on_add_child_to_war_map(e)) # 添加新节点到地图中
 	GameGlobals.set_game_state(GameEnums.GameState.playing) # 设置游戏状态为游玩中
@@ -137,11 +139,7 @@ func _generate_enemy_grids() -> void:
 	_clear_enemy_grids_in_container()
 	var total = 20 if Engine.is_editor_hint() \
 		else GameGlobals.get_enemy_total_count()
-	for i in range(total):
-		var enemy_tag = TextureRect.new()
-		enemy_tag.texture = _enemy_tag_atlas
-		enemy_tag.size = Vector2(14, 14)
-		_enemy_grid_container.add_child(enemy_tag)
+	for i in range(total): _add_one_enemy_tag_to_grid()
 
 ## 从敌人表格中移除一条数据
 func _remove_one_from_enemy_grids() -> void:
@@ -155,6 +153,13 @@ func _remove_one_from_enemy_grids() -> void:
 func _clear_enemy_grids_in_container() -> void:
 	for enemy_tag in _enemy_grid_container.get_children():
 		enemy_tag.queue_free()
+
+## 添加一个敌人表格数据
+func _add_one_enemy_tag_to_grid() -> void:
+	var enemy_tag = TextureRect.new()
+	enemy_tag.texture = _enemy_tag_atlas
+	enemy_tag.size = Vector2(14, 14)
+	_enemy_grid_container.add_child(enemy_tag)
 
 ## 游戏胜利
 func _on_game_win() -> void:
@@ -190,3 +195,12 @@ func _generate_player_tank() -> void:
 	if GameGlobals.decrement_one_player_life(): # 减少一条生命数
 		_player_lifes.set_number(GameGlobals.get_player_life_count())
 	_tank_factory.generate_player_tank(_generate_player_tank) # 生成新玩家
+
+## 坦克增援
+func _on_tank_reinfocements(type: GameEnums.TankType) -> void:
+	if type != GameEnums.TankType.player:
+		_add_one_enemy_tag_to_grid()
+		return
+	GameGlobals.increment_one_player_life()
+	_player_lifes.set_number(GameGlobals.get_player_life_count())
+		
