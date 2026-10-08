@@ -55,6 +55,8 @@ func _enter_tree() -> void:
 	GameGlobals.set_game_state(GameEnums.GameState.playing) #设置游戏状态为游玩中
 
 func _ready() -> void:
+	_game_over_tag.position = Vector2( \
+		GameGlobals.GAME_MAP_CONTAINER_SIZE.x / 2.0, 480.0)
 	_stage_level.set_number(\
 		1 if Engine.is_editor_hint() else GameGlobals.get_stage_level())
 	_player_lifes.set_number( \

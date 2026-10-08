@@ -11,14 +11,13 @@ absorbent = true
 size = Vector2(16, 16)
 
 [node name="MapTile" type="StaticBody2D" unique_id=1403485562 node_paths=PackedStringArray("_collision_shape")]
-collision_layer = 0
+collision_layer = 32
 collision_mask = 30
 physics_material_override = SubResource("PhysicsMaterial_si52b")
 script = ExtResource("1_dif2y")
 _collision_shape = NodePath("CollisionShape2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=65353653]
-z_index = 4096
 texture = ExtResource("2_synv0")
 centered = false
 
