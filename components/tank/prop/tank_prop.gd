@@ -15,6 +15,9 @@ var _sprite: Sprite2D
 @export
 var _collision_shape: CollisionShape2D
 
+## 闪烁动画
+var _blink_tween: Tween
+
 func _ready() -> void:
 	var timer = Timer.new()
 	timer.one_shot = true
@@ -44,9 +47,9 @@ func _on_body_entered(body: Node2D) -> void:
 		var can_fetch = tank_type == GameEnums.TankType.player or \
 			(tank_type != GameEnums.TankType.player and \
 				GameGlobals.get_game_level() == GameEnums.GameLevel.difficult)
-		if can_fetch: #如果能拾取道具，则执行道具拾取
-			handle_fetched() #处理道具被拾取
-			tank.fetch_prop(_type) #处理对应的坦克获得道具
+		if can_fetch: # 如果能拾取道具，则执行道具拾取
+			handle_fetched() # 处理道具被拾取
+			tank.fetch_prop(_type) # 处理对应的坦克获得道具
 
 ## 添加注销释放对象的定时器
 func _add_free_timer(time: float) -> void:
@@ -57,12 +60,22 @@ func _add_free_timer(time: float) -> void:
 	timer.timeout.connect(queue_free)
 	add_child(timer)
 
+## 释放对象
+func _on_free_object() -> void:
+	if _blink_tween:
+		_blink_tween.kill()
+		_blink_tween = null
+	queue_free() # 下一帧释放对象
+
 ## 显示闪烁特效
 func _show_blink_effect() -> void:
-	_add_free_timer(5.0) #5秒后释放对象
-	var blink_tween = get_tree().create_tween().set_loops(0)
-	blink_tween.tween_property(_sprite, "modulate:a", 0.2, 0.5)
-	blink_tween.tween_property(_sprite, "modulate:a", 1.0, 0.5)
+	_add_free_timer(5.0) # 5秒后释放对象
+	if _blink_tween:
+		_blink_tween.kill()
+		_blink_tween = null
+	_blink_tween = get_tree().create_tween().set_loops(0)
+	_blink_tween.tween_property(_sprite, "modulate:a", 0.2, 0.5)
+	_blink_tween.tween_property(_sprite, "modulate:a", 1.0, 0.5)
 
 ## 显示得分记录
 func _show_get_score_record() -> void:
@@ -89,11 +102,11 @@ func _show_get_score_record() -> void:
 ## 处理道具已经被拾取
 func handle_fetched() -> void:
 	_collision_shape.set_deferred('disabled', true)
-	_show_get_score_record() #显示得分记录
-	queue_free() #在下一帧从节点中删除
+	_show_get_score_record() # 显示得分记录
+	_on_free_object() # 在下一帧从节点中删除
 
 ## 创建一条实例
-static func create( \
+static func create(\
 	type: GameEnums.TankPropType, \
 	location: Vector2) -> TankProp:
 	var instance = (load('res://components/tank/prop/tank_prop.tscn') \

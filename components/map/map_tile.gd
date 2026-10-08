@@ -15,22 +15,23 @@ var _collision_shape: CollisionShape2D
 @export
 var _tile_type: GameEnums.MapTileType = GameEnums.MapTileType.mud_wall
 
-func _ready() -> void:
-	set_map_title_type(_tile_type)
+func _ready() -> void: pass
+	# set_map_title_type(_tile_type)
+	# set_collision_layer_value(CollisionLayers.layer_map_tile_mud_wall, false)
 
 func _process(_delta: float) -> void:
 	pass
 
 ## 设置地砖的类型
 func set_map_title_type(type: GameEnums.MapTileType) -> void:
-	_tile_type = type #更新当前的地砖类型
+	_tile_type = type # 更新当前的地砖类型
 	match type:
 		GameEnums.MapTileType.mud_wall:
 			set_collision_layer_value(CollisionLayers.layer_map_tile_mud_wall, true)
 		GameEnums.MapTileType.steel_wall:
 			set_collision_layer_value(CollisionLayers.layer_map_tile_steel_wall, true)
 		GameEnums.MapTileType.grass:
-			z_index = RenderingServer.CANVAS_ITEM_Z_MAX #设置尽量大的数据
+			z_index = RenderingServer.CANVAS_ITEM_Z_MAX # 设置尽量大的数据
 			set_collision_mask_value(CollisionLayers.layer_player_tank, false)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_ice, true)
 			set_collision_layer_value(CollisionLayers.layer_map_tile_grass, false)
@@ -74,7 +75,7 @@ func set_master_boom_status() -> void:
 		audioStreamPlayer.finished \
 			.connect(func(): audioStreamPlayer.queue_free())
 		add_child(audioStreamPlayer)
-	player_master_explode_finished.emit() #玩家爆炸完成事件
+	player_master_explode_finished.emit() # 玩家爆炸完成事件
 	$Sprite2D.texture = load('res://assets/textures/map_tile_player_home_destroy.tres') as AtlasTexture
 
 ## 创建实例
