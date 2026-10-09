@@ -42,6 +42,16 @@ var _born_total_count: int = GameGlobals.DEFAULT_ENEMY_TOTAL_COUNT
 ## 在地图上的敌方坦克总数量
 var _total_count_in_map: int = GameGlobals.DEFAULT_ENEMY_COUNT_IN_MAP
 
+## 坦克指定的移动速度
+@export
+var _enemty_tank_speeds: Dictionary[GameEnums.TankType, float] = {
+	GameEnums.TankType.enemy: 90,
+	GameEnums.TankType.enemy1: 150,
+	GameEnums.TankType.enemy2: 120,
+	GameEnums.TankType.enemy3: 110,
+	GameEnums.TankType.enemy4:  100
+}
+
 ## 敌方坦克生成的概率权重数据
 @export
 var _enemy_tank_weights: Dictionary[GameEnums.TankType, int] = {
@@ -110,15 +120,17 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 	_genereate_enemy_count += 1 # 每生产一个，数量增加1
 	var is_red_tank = \
 		(_genereate_enemy_count - 1) in red_tank_indexs
-	var random_type = _generate_enemy_type()
+	var rand_type = _generate_enemy_type()
 	var tank = Tank.create(\
-		random_type, born_position, Vector2.DOWN)
+		rand_type, born_position, Vector2.DOWN)
 	tank.set_render_index(1000)
 	if is_red_tank: # 如果是红坦克，生成随机闪烁次数
 		var times = randi_range(1, 3)
 		tank.set_red_blink_times(times)
 		tank.red_tank_attacked \
 			.connect(func(): red_tank_attacked.emit())
+	tank.speed = _enemty_tank_speeds[rand_type] \
+		if _enemty_tank_speeds.has(rand_type) else 100.0
 	tank.tank_reinforcements.connect(_on_tank_reinforcements)
 	add_child(tank) # 添加生成的坦克到子节点
 	on_born_one_enemy_tank.emit() # 发送事件，标记生产了一个敌人坦克

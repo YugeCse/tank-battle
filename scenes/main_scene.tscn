@@ -73,6 +73,7 @@ position = Vector2(16, 16)
 [node name="TankFactory" parent="WarMapContainer" unique_id=2064319392 instance=ExtResource("16_01n6w")]
 z_index = 1000
 red_tank_indexs = Array[int]([3, 10, 15, 18])
+_enemty_tank_speeds = null
 _enemy_tank_weights = null
 
 [node name="GrassWarMap" type="Node2D" parent="WarMapContainer" unique_id=2074191540]
