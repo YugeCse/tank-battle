@@ -1,5 +1,8 @@
 extends Node2D
 
+## 坦克道具生产工厂
+class_name TankPropFactory
+
 ## 默认的权重信息
 const _DEFAULT_WEIGHTS: Dictionary[GameEnums.TankPropType, int] = {
 	GameEnums.TankPropType.timer: 5,

@@ -15,7 +15,7 @@ class SleepStatus extends CapabilityProperty:
 		set(value):
 			hold_on_time_sec = value
 	
-	func _init(holdon_time_sec: float = 20.0) -> void:
+	func _init(holdon_time_sec: float = 30.0) -> void:
 		self.hold_on_time_sec = holdon_time_sec
 
 ## 火力增强

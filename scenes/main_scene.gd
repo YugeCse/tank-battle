@@ -33,7 +33,11 @@ var _stage_level: NumberText
 @export
 var _player_lifes: NumberText
 
-## 坦克生成工厂
+## 坦克道具生产工厂
+@export
+var _tank_prop_factory: TankPropFactory
+
+## 坦克生产工厂
 @export
 var _tank_factory: TankFactory
 
@@ -49,7 +53,7 @@ var _statistics_none_tank_time: float = 0.0
 func _enter_tree() -> void:
 	if Engine.is_editor_hint(): return
 	_tank_factory.red_tank_attacked.connect(func(): \
-		$WarMapContainer/TankPropFactory.generate_prop())
+		_tank_prop_factory.call_deferred('generate_prop'))
 	_tank_factory.on_born_one_enemy_tank \
 		.connect(_remove_one_from_enemy_grids) # 如果生产一个敌方坦克，移除一个标志
 	_tank_factory.tank_reinforcements \

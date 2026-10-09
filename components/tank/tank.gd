@@ -74,6 +74,9 @@ var _auto_fire_timer: Timer
 ## 自动移动方向数据
 var _auto_move_direction: Vector2 = Vector2.ZERO
 
+## 解冻定时器
+var _unfreeze_timer: Timer
+
 ## 生命状态
 var _life_state: GameEnums.LifeState = GameEnums.LifeState.born
 
@@ -99,14 +102,15 @@ func _process(delta: float) -> void:
 		_life_state != GameEnums.LifeState.alive: return
 	var target_dir = Vector2.ZERO
 	if allow_control:
-		if Input.is_action_pressed('ui_left'):
-			target_dir = Vector2.LEFT
-		elif Input.is_action_pressed('ui_right'):
-			target_dir = Vector2.RIGHT
-		elif Input.is_action_pressed('ui_up'):
-			target_dir = Vector2.UP
-		elif Input.is_action_pressed('ui_down'):
-			target_dir = Vector2.DOWN
+		if not is_freeze(): #如果不是冻结状态
+			if Input.is_action_pressed('ui_left'):
+				target_dir = Vector2.LEFT
+			elif Input.is_action_pressed('ui_right'):
+				target_dir = Vector2.RIGHT
+			elif Input.is_action_pressed('ui_up'):
+				target_dir = Vector2.UP
+			elif Input.is_action_pressed('ui_down'):
+				target_dir = Vector2.DOWN
 		if Input.is_action_just_pressed('shoot'):
 			_player_shoot_time_span = GameGlobals \
 				.get_player_tank_shoot_span_time(self)
@@ -116,7 +120,9 @@ func _process(delta: float) -> void:
 					_player_shoot_time_span_statistics = 0.0
 				shoot() # 执行发射子弹
 		_player_shoot_time_span_statistics += delta
-	else: target_dir = _auto_move_direction
+	else: 
+		if not is_freeze():
+			target_dir = _auto_move_direction
 	if target_dir != Vector2.ZERO:
 		set_facing_dir(target_dir)
 	var collide = move_and_collide(target_dir * speed * delta) # 执行移动逻辑
@@ -212,6 +218,72 @@ func get_strong_fire_capability() -> DataResult:
 		return DataResult.fail('没有加强火力的能力')
 	return DataResult.ok(capabilities[0])
 
+## 增加火力能力
+func increment_strong_fire_capability() -> void:
+	var h = has_strong_fire_capability()
+	if not h:
+		_capabilities.append(CapabilityProperty.StrongFire.new(1))
+	else:
+		var capa = _capabilities.filter(func(e): \
+			return e is CapabilityProperty.StrongFire)[0] \
+			as CapabilityProperty.StrongFire
+		capa.fire_level += 1
+		print('火力新增到：{0}'.format([capa.fire_level]))
+		_player_shoot_time_span = 0.15 if capa.fire_level > 1 else 0.3
+
+## 减弱火力能力
+func decrement_strong_fire_capability() -> bool:
+	var h = has_strong_fire_capability()
+	if not h: return false
+	var capa = _capabilities.filter(func(e): \
+			return e is CapabilityProperty.StrongFire)[0] \
+			as CapabilityProperty.StrongFire
+	if capa.fire_level >= 3:
+		capa.fire_level = 2
+		return true
+	_player_shoot_time_span = 0.3
+	_capabilities.erase(capa) #删除这个能力
+	return false
+
+## 获取是否是冻结状态
+func is_freeze() -> bool:
+	return _capabilities.any(func(e): \
+		return e is CapabilityProperty.SleepStatus)
+
+## 设置为冻结模式
+func set_freeze_mode() -> void:
+	_release_unfreeze_timer()
+	if is_freeze():
+		_remove_sleep_capabilities()
+	if _tank_type == GameEnums.TankType.player:
+		show_blink_effect()
+	else: _release_auto_fire_timer()
+	var new_capa = CapabilityProperty.SleepStatus.new()
+	_capabilities.append(new_capa)
+	_unfreeze_timer = Timer.new()
+	_unfreeze_timer.autostart = true
+	_unfreeze_timer.wait_time = new_capa.hold_on_time_sec
+	_unfreeze_timer.timeout.connect(_remove_sleep_capabilities)
+	add_child(_unfreeze_timer) #把定时器添加到节点中
+
+## 释放不冻结的定时器
+func _release_unfreeze_timer():
+	if not _unfreeze_timer: return
+	if not _unfreeze_timer.is_stopped():
+		_unfreeze_timer.stop()
+	_unfreeze_timer.queue_free()
+	_unfreeze_timer = null
+
+## 移除所有的休眠能力
+func _remove_sleep_capabilities() -> void:
+	_release_unfreeze_timer()
+	if _tank_type == GameEnums.TankType.player:
+		dispose_blink_effect() #移除闪烁效果
+	else: start_auto_fire_timer()
+	var capas = _capabilities.filter(func(e): \
+			return e is CapabilityProperty.SleepStatus)
+	for capa in capas: _capabilities.erase(capa)
+
 ## 更新精灵
 func update_sprite(\
 	new_textures: Dictionary[String, AtlasTexture]) -> void:
@@ -241,9 +313,14 @@ func shoot() -> void:
 func fetch_prop(type: GameEnums.TankPropType) -> void:
 	match type:
 		GameEnums.TankPropType.timer: #定时器
-			pass
+			if _tank_type == GameEnums.TankType.player:
+				var tanks = get_tree().get_nodes_in_group(&'enemy_tank')
+				for tank in tanks: (tank as Tank).set_freeze_mode()
+			else:
+				var tanks = get_tree().get_nodes_in_group(&'player_tank')
+				for tank in tanks: (tank as Tank).set_freeze_mode()
 		GameEnums.TankPropType.star: #五角星
-			pass
+			increment_strong_fire_capability() #增强火力能力
 		GameEnums.TankPropType.bomb: #炸弹处理
 			if _tank_type == GameEnums.TankType.player:
 				var tanks = get_tree().get_nodes_in_group(&'enemy_tank')
@@ -364,6 +441,7 @@ func attacked(attached_point: int) -> void:
 		return
 	if _red_blink_tween:
 		dispose_red_blink_effect()
+	if decrement_strong_fire_capability(): return
 	if blood >= 1:
 		blood -= attached_point # 减少血量
 	if blood <= 0: show_explode_destroy_effect()

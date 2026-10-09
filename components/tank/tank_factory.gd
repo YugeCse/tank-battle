@@ -7,7 +7,7 @@ class_name TankFactory
 ## 红坦克收到攻击时的反馈事件
 signal red_tank_attacked()
 
-## 敌人增加增援
+##坦克增加增援
 signal tank_reinforcements()
 
 ## 是否开启debug模式
@@ -70,6 +70,8 @@ func generate_player_tank(explode_finished: Callable) -> void:
 	tank.set_capabilities([ \
 		# CapabilityProperty.Ferry.new(), \
 		CapabilityProperty.ProtectClothes.new(10.0)])
+	tank.tank_reinforcements \
+		.connect(func(e): tank_reinforcements.emit(e))
 	tank.explode_finished.connect(explode_finished)
 	add_child(tank) # 添加到坦克工厂节点
 
@@ -79,8 +81,10 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 	_genereate_enemy_count += 1 # 每生产一个，数量增加1
 	var is_red_tank = \
 		(_genereate_enemy_count - 1) in red_tank_indexs
+	var random_type = GameEnums \
+		.all_enemy_tank_types.pick_random()
 	var tank = Tank.create(\
-		GameEnums.TankType.enemy, born_position, Vector2.DOWN)
+		random_type, born_position, Vector2.DOWN)
 	tank.set_render_index(1000)
 	if is_red_tank: # 如果是红坦克，生成随机闪烁次数
 		var times = randi_range(1, 3)
@@ -95,6 +99,7 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 func _on_tank_reinforcements(type: GameEnums.TankType) -> void:
 	if type != GameEnums.TankType.player:
 		_born_total_count += 1
+	print('增加坦克救援 signal 发送')
 	tank_reinforcements.emit(type) #提交事件
 
 ## 执行生成坦克的定时器回调
