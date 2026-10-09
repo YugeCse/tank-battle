@@ -47,7 +47,6 @@ atlas = ExtResource("3_7ykc4")
 region = Rect2(384, 64, 62, 30)
 
 [node name="MainScene" type="Node2D" unique_id=1217946177 node_paths=PackedStringArray("_map_container", "_war_map", "_grass_war_map", "_game_over_tag", "_enemy_grid_container", "_stage_level", "_player_lifes", "_tank_prop_factory", "_tank_factory")]
-visible = false
 script = ExtResource("1_w2twt")
 _map_container = NodePath("WarMapContainer")
 _war_map = NodePath("WarMapContainer/WarMap")
@@ -74,6 +73,7 @@ position = Vector2(16, 16)
 [node name="TankFactory" parent="WarMapContainer" unique_id=2064319392 instance=ExtResource("16_01n6w")]
 z_index = 1000
 red_tank_indexs = Array[int]([3, 10, 15, 18])
+_enemy_tank_weights = null
 
 [node name="GrassWarMap" type="Node2D" parent="WarMapContainer" unique_id=2074191540]
 
@@ -125,7 +125,7 @@ offset_bottom = 333.0
 texture = SubResource("AtlasTexture_r6p65")
 
 [node name="PlayerLifes" type="Control" parent="InfoSidebar/PlayerLifeTag" unique_id=1108112189]
-custom_minimum_size = Vector2(16, 13)
+custom_minimum_size = Vector2(12, 13)
 anchors_preset = 0
 offset_left = 22.0
 offset_top = 21.0
@@ -133,7 +133,7 @@ offset_right = 62.0
 offset_bottom = 37.0
 script = ExtResource("4_pu3yx")
 num_tres = Array[AtlasTexture]([ExtResource("5_r6p65"), ExtResource("6_si52b"), ExtResource("7_01n6w"), ExtResource("8_6u1mn"), ExtResource("9_bcnxi"), ExtResource("10_7nt27"), ExtResource("11_k6f3i"), ExtResource("12_xdqt8"), ExtResource("13_adb74"), ExtResource("14_58gk3")])
-_number = 2
+_number = 1
 
 [node name="TextureRect" type="TextureRect" parent="InfoSidebar" unique_id=534185155]
 layout_mode = 0

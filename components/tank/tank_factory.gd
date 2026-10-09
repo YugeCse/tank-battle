@@ -42,6 +42,16 @@ var _born_total_count: int = GameGlobals.DEFAULT_ENEMY_TOTAL_COUNT
 ## 在地图上的敌方坦克总数量
 var _total_count_in_map: int = GameGlobals.DEFAULT_ENEMY_COUNT_IN_MAP
 
+## 敌方坦克生成的概率权重数据
+@export
+var _enemy_tank_weights: Dictionary[GameEnums.TankType, int] = {
+	GameEnums.TankType.enemy: 35,
+	GameEnums.TankType.enemy1: 25,
+	GameEnums.TankType.enemy2: 13,
+	GameEnums.TankType.enemy3: 12,
+	GameEnums.TankType.enemy4: 15
+}
+
 ## 生成一个敌方坦克后，会发送该事件
 signal on_born_one_enemy_tank()
 
@@ -60,7 +70,7 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, GameGlobals.GAME_MAP_SIZE), Color.BLACK, false)
 
-# 生成玩家坦克
+## 生成玩家坦克
 func generate_player_tank(explode_finished: Callable) -> void:
 	var tank = Tank.create(\
 		GameEnums.TankType.player, \
@@ -75,14 +85,32 @@ func generate_player_tank(explode_finished: Callable) -> void:
 	tank.explode_finished.connect(explode_finished)
 	add_child(tank) # 添加到坦克工厂节点
 
+## 生成随机敌人类型
+func _generate_enemy_type() -> GameEnums.TankType:
+	var total_weight = 0
+	var keys = _enemy_tank_weights.keys()
+	for key in keys:
+		if  _enemy_tank_weights[key] < 0: continue
+		total_weight += _enemy_tank_weights[key]
+	if total_weight < 0:
+		push_error('生成数据的权重数据结果小于 0')
+	var acc = 0
+	var rand := randi_range(1, total_weight)
+	for key in keys:
+		var weight = _enemy_tank_weights[key]
+		if weight < 0: continue
+		acc += weight
+		if rand <= acc:
+			return key
+	return GameEnums.TankType.enemy
+
 ## 生成敌方的坦克
 func _generate_enemy_tank(born_position: Vector2) -> void:
 	_born_total_count -= 1 # 每生产一个，总数量减少1
 	_genereate_enemy_count += 1 # 每生产一个，数量增加1
 	var is_red_tank = \
 		(_genereate_enemy_count - 1) in red_tank_indexs
-	var random_type = GameEnums \
-		.all_enemy_tank_types.pick_random()
+	var random_type = _generate_enemy_type()
 	var tank = Tank.create(\
 		random_type, born_position, Vector2.DOWN)
 	tank.set_render_index(1000)
