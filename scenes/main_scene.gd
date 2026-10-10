@@ -50,6 +50,21 @@ var _game_enter_win_status: bool = false
 ## 统计无坦克的时长数据
 var _statistics_none_tank_time: float = 0.0
 
+## 玩家总部围墙地图图块元素
+var _player_master_wall_tiles: Array[Node2D] = []
+
+## 玩家总部围墙地图图块坐标
+var _player_master_wall_tile_coords: Array[Vector2] = [
+	Vector2i(11, 25),
+	Vector2i(11, 24),
+	Vector2i(11, 23),
+	Vector2i(12, 23),
+	Vector2i(13, 23),
+	Vector2i(14, 23),
+	Vector2i(14, 24),
+	Vector2i(14, 25),
+]
+
 func _enter_tree() -> void:
 	if Engine.is_editor_hint(): return
 	_tank_factory.red_tank_attacked.connect(func(): \
@@ -105,6 +120,10 @@ func _on_add_child_to_war_map(node: Node2D) -> void:
 func _draw() -> void:
 	draw_rect(get_viewport().get_visible_rect(), \
 		GameGlobals.DEFAULT_BACKGROUND_COLOR)
+	for coord in _player_master_wall_tile_coords:
+		draw_rect(Rect2(coord, Vector2( \
+			GameGlobals.GAME_MAP_TILE_SIZE, \
+			GameGlobals.GAME_MAP_TILE_SIZE)), Color.AQUA)
 
 ## 加载地图数据
 func _load_map_tiles(stage: int) -> void:
@@ -130,13 +149,19 @@ func _layout_map_tiles(map_data: Array) -> void:
 				column * GameGlobals.GAME_MAP_TILE_SIZE, \
 				row * GameGlobals.GAME_MAP_TILE_SIZE)
 			var map_tile = MapTile.create(location)
+			map_tile.set_grid_coord(Vector2(column, row))
 			map_tile.set_map_title_type(type)
+			if _player_master_wall_tile_coords \
+				.any(func(e: Vector2i): \
+					return e == map_tile.get_grid_coord()):
+				_player_master_wall_tiles.append(map_tile)
 			if type == GameEnums.MapTileType.home:
 				map_tile.player_master_explode_finished \
 					.connect(_on_game_over)
 			if type != GameEnums.MapTileType.grass:
 				_war_map.add_child(map_tile)
 			else: _grass_war_map.add_child(map_tile)
+	print('完成获取玩家总部地砖信息，total: {0}'.format([_player_master_wall_tiles.size()]))
 
 ## 生成敌方表格数据
 func _generate_enemy_grids() -> void:

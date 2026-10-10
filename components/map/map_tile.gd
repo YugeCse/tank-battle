@@ -7,6 +7,9 @@ class_name MapTile
 ## 玩家总部爆炸完成
 signal player_master_explode_finished()
 
+## 地砖的表格坐标
+var _grid_coord: Vector2i
+
 ## 地砖的碰撞形状
 @export
 var _collision_shape: CollisionShape2D
@@ -21,6 +24,13 @@ func _ready() -> void: pass
 
 func _process(_delta: float) -> void:
 	pass
+
+## 设置表格坐标数据
+func set_grid_coord(coord: Vector2i) -> void:
+	_grid_coord = coord
+
+## 获取表格坐标
+func get_grid_coord() -> Vector2i: return _grid_coord
 
 ## 设置地砖的类型
 func set_map_title_type(type: GameEnums.MapTileType) -> void:
