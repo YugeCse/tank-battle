@@ -139,12 +139,11 @@ func _draw() -> void:
 	box.bg_color = Color.TRANSPARENT
 	box.border_color = Color.WHITE_SMOKE
 	var rect = _tank_sprite.get_rect()
-	var rect_s = rect.size / 2.0
 	var new_rect = Rect2(\
-		rect.position.x - rect_s.x, \
-		rect.position.y - rect_s.y, \
+		rect.position.x, \
+		rect.position.y, \
 		rect.size.x, rect.size.y)
-	draw_style_box(box, new_rect.grow(2.0))
+	draw_style_box(box, new_rect.grow(4.0))
 
 ## 设置渲染层级
 func set_render_index(index: int) -> void:
@@ -208,6 +207,7 @@ func has_ferry_capability() -> bool:
 func add_ferry_capability() -> void:
 	remove_ferry_capability()
 	_capabilities.append(CapabilityProperty.Ferry.new())
+	queue_redraw() #重新绘制画布
 
 ## 移除轮渡能力
 func remove_ferry_capability() -> void:
@@ -215,10 +215,12 @@ func remove_ferry_capability() -> void:
 	var capas = _capabilities.filter(func(e): \
 		return e is CapabilityProperty.Ferry)
 	for capa in capas: _capabilities.erase(capa)
+	queue_redraw() #重新绘制画布
 
 ## 是否有保护衣的能力
 func has_protect_clothes() -> bool:
-	return _capabilities.any(func(e): return e is CapabilityProperty.ProtectClothes)
+	return _capabilities.any(func(e): \
+		return e is CapabilityProperty.ProtectClothes)
 
 ## 是否有增强火力的能力
 func has_strong_fire_capability() -> bool:
@@ -233,18 +235,30 @@ func get_strong_fire_capability() -> DataResult:
 		return DataResult.fail('没有加强火力的能力')
 	return DataResult.ok(capabilities[0])
 
+## 获取加强火力的等级
+func get_strong_fire_capability_level() -> int:
+	var result = get_strong_fire_capability()
+	if not result.success: return 0
+	return (result.value as CapabilityProperty.StrongFire).fire_level
+
 ## 增加火力能力
 func increment_strong_fire_capability() -> void:
+	var fire_level = 0
 	var h = has_strong_fire_capability()
 	if not h:
+		fire_level = 1
 		_capabilities.append(CapabilityProperty.StrongFire.new(1))
 	else:
 		var capa = _capabilities.filter(func(e): \
 			return e is CapabilityProperty.StrongFire)[0] \
 			as CapabilityProperty.StrongFire
 		capa.fire_level += 1
+		fire_level = capa.fire_level
 		print('火力新增到：{0}'.format([capa.fire_level]))
 		_player_shoot_time_span = 0.15 if capa.fire_level > 1 else 0.3
+	if _tank_type == GameEnums.TankType.player:
+		var new_textures = get_tank_atlas_textures(_tank_type, fire_level)
+		self._tank_atlas_textures = new_textures #更新新的精灵
 
 ## 减弱火力能力
 func decrement_strong_fire_capability() -> bool:
@@ -253,12 +267,21 @@ func decrement_strong_fire_capability() -> bool:
 	var capa = _capabilities.filter(func(e): \
 			return e is CapabilityProperty.StrongFire)[0] \
 			as CapabilityProperty.StrongFire
+	var is_handled = false
+	var now_fire_level = 0
 	if capa.fire_level >= 3:
 		capa.fire_level = 2
-		return true
-	_player_shoot_time_span = 0.3
-	_capabilities.erase(capa) #删除这个能力
-	return false
+		now_fire_level = 2
+		is_handled = true
+	else:
+		now_fire_level = 0
+		_player_shoot_time_span = 0.3
+		_capabilities.erase(capa) #删除这个能力
+	if _tank_type == GameEnums.TankType.player:
+		var new_textures = \
+			get_tank_atlas_textures(_tank_type, now_fire_level)
+		self._tank_atlas_textures = new_textures #更新新的精灵
+	return is_handled
 
 ## 获取是否是冻结状态
 func is_freeze() -> bool:
@@ -328,7 +351,7 @@ func shoot() -> void:
 func fetch_prop(type: GameEnums.TankPropType) -> void:
 	match type:
 		GameEnums.TankPropType.gun: #手枪
-			pass
+			increment_strong_fire_capability()
 		GameEnums.TankPropType.ferry: #轮渡
 			add_ferry_capability() #添加轮渡能力
 		GameEnums.TankPropType.timer: #定时器
@@ -553,14 +576,29 @@ static func create(\
 	return instance
 
 ## 获取玩家的 texture 资源
-static func get_tank_atlas_textures(type: GameEnums.TankType) -> Dictionary[String, AtlasTexture]:
+static func get_tank_atlas_textures( \
+	type: GameEnums.TankType, \
+	fire_level: int = 0) -> Dictionary[String, AtlasTexture]:
 	var dic: Dictionary[String, AtlasTexture] = {}
 	var dirs = ['left', 'right', 'up', 'down']
 	for dir in dirs:
 		if type == GameEnums.TankType.player:
-			dic[dir] = load(\
-				"res://assets/textures/tank_player/tank_player_{0}.tres" \
-				.format([dir])) as AtlasTexture
+			if fire_level <= 0:
+				dic[dir] = load(\
+					"res://assets/textures/tank_player/tank_player_{0}.tres" \
+					.format([dir])) as AtlasTexture
+			elif fire_level == 1:
+				dic[dir] = load(\
+					"res://assets/textures/tank_player/tank_player_{0}_1.tres" \
+					.format([dir])) as AtlasTexture
+			elif fire_level == 2:
+				dic[dir] = load(\
+					"res://assets/textures/tank_player/tank_player_{0}_2.tres" \
+					.format([dir])) as AtlasTexture
+			else:
+				dic[dir] = load(\
+					"res://assets/textures/tank_player/tank_player_{0}_3.tres" \
+					.format([dir])) as AtlasTexture
 		elif type == GameEnums.TankType.enemy:
 			dic[dir] = load(\
 				"res://assets/textures/tank_enemies/tank_enemy0_{0}.tres" \
