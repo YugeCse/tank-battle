@@ -18,6 +18,9 @@ var _collision_shape: CollisionShape2D
 ## 闪烁动画
 var _blink_tween: Tween
 
+## 道具得分，分值：100， 200， 400， 500
+var _prop_score: int = 100
+
 func _ready() -> void:
 	var timer = Timer.new()
 	timer.one_shot = true
@@ -38,6 +41,13 @@ func set_prop_type(type: GameEnums.TankPropType) -> void:
 
 ## 获取道具类型
 func get_prop_type() -> GameEnums.TankPropType: return _type
+
+## 设置道具分数, 100, 200, 400, 500
+func set_prop_score(score: int) -> void:
+	_prop_score = score
+
+## 获取道具分数
+func get_prop_score() -> int: return _prop_score
 
 ## 如果检测到有物体发生碰撞
 func _on_body_entered(body: Node2D) -> void:
@@ -87,7 +97,9 @@ func _show_get_score_record() -> void:
 			audio_player.stream = load('res://assets/sounds/getProp.mp3')
 		else: audio_player.stream = load('res://assets/sounds/prop.mp3')
 		score_sprite.add_child(audio_player)
-	var texture = load('res://assets/textures/ui/score/score_100.tres') as AtlasTexture
+	var texture = load( \
+		'res://assets/textures/ui/score/score_{0}.tres' \
+		.format([_prop_score])) as AtlasTexture
 	var t_size = texture.get_size()
 	score_sprite.texture = texture
 	score_sprite.centered = true

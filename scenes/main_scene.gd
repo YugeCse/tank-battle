@@ -240,7 +240,7 @@ func _on_master_defense(type: GameEnums.TankType) -> void:
 			coord.x * GameGlobals.GAME_MAP_TILE_SIZE, \
 			coord.y * GameGlobals.GAME_MAP_TILE_SIZE))
 		tile.set_map_tile_to_steel_wall_directly()
-		_war_map.add_child(tile)
+		_war_map.call_deferred('add_child', tile)
 
 ## 坦克增援
 func _on_tank_reinforcements(type: GameEnums.TankType) -> void:

@@ -204,6 +204,18 @@ func has_ferry_capability() -> bool:
 	return _capabilities.any(func(e): \
 		return e is CapabilityProperty.Ferry)
 
+## 添加轮渡能力
+func add_ferry_capability() -> void:
+	remove_ferry_capability()
+	_capabilities.append(CapabilityProperty.Ferry.new())
+
+## 移除轮渡能力
+func remove_ferry_capability() -> void:
+	if not has_ferry_capability(): return
+	var capas = _capabilities.filter(func(e): \
+		return e is CapabilityProperty.Ferry)
+	for capa in capas: _capabilities.erase(capa)
+
 ## 是否有保护衣的能力
 func has_protect_clothes() -> bool:
 	return _capabilities.any(func(e): return e is CapabilityProperty.ProtectClothes)
@@ -315,6 +327,10 @@ func shoot() -> void:
 ## 拾取道具
 func fetch_prop(type: GameEnums.TankPropType) -> void:
 	match type:
+		GameEnums.TankPropType.gun: #手枪
+			pass
+		GameEnums.TankPropType.ferry: #轮渡
+			add_ferry_capability() #添加轮渡能力
 		GameEnums.TankPropType.timer: #定时器
 			if _tank_type == GameEnums.TankType.player:
 				var tanks = get_tree().get_nodes_in_group(&'enemy_tank')

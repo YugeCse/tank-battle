@@ -50,12 +50,12 @@ var _game_level: GameEnums.GameLevel = GameEnums.GameLevel.easy
 ## 地图图块数据集合
 @onready
 var _map_tile_atlas_texture: Dictionary[GameEnums.MapTileType, AtlasTexture] = {
-	GameEnums.MapTileType.mud_wall: preload("res://assets/textures/map_tile_mud_wall.tres"),
-	GameEnums.MapTileType.steel_wall: preload("res://assets/textures/map_tile_steel_wall.tres"),
-	GameEnums.MapTileType.grass: preload("res://assets/textures/map_tile_grass.tres"),
-	GameEnums.MapTileType.river: preload("res://assets/textures/map_tile_grass.tres"),
-	GameEnums.MapTileType.ice: preload("res://assets/textures/map_tile_ice.tres"),
-	GameEnums.MapTileType.home: preload("res://assets/textures/map_tile_player_home.tres")
+	GameEnums.MapTileType.mud_wall: preload("res://assets/textures/map/map_tile_mud_wall.tres"),
+	GameEnums.MapTileType.steel_wall: preload("res://assets/textures/map/map_tile_steel_wall.tres"),
+	GameEnums.MapTileType.grass: preload("res://assets/textures/map/map_tile_grass.tres"),
+	GameEnums.MapTileType.river: preload("res://assets/textures/map/map_tile_grass.tres"),
+	GameEnums.MapTileType.ice: preload("res://assets/textures/map/map_tile_ice.tres"),
+	GameEnums.MapTileType.home: preload("res://assets/textures/map/map_tile_player_home.tres")
 }
 
 func _ready() -> void:
@@ -139,4 +139,16 @@ func get_player_tank_shoot_span_time(tank: Tank) -> float:
 	if not data_result.success: return 0.5
 	var strongFireCapability = data_result.value as CapabilityProperty.StrongFire
 	return 0.3 if strongFireCapability.fire_level >= 1 else 0.4
-	
+
+## 获取道具对应的分数
+func get_tank_prop_score(type: GameEnums.TankPropType) -> int:
+	var score = 100
+	match type:
+		GameEnums.TankPropType.bomb: score = 200
+		GameEnums.TankPropType.star: score = 200
+		GameEnums.TankPropType.hat: score = 200
+		GameEnums.TankPropType.ferry: score = 100
+		GameEnums.TankPropType.gun: score = 500
+		GameEnums.TankPropType.master_defense: score = 400
+		GameEnums.TankPropType.reinforcements: score = 500
+	return score

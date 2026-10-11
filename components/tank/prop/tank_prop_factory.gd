@@ -5,12 +5,14 @@ class_name TankPropFactory
 
 ## 默认的权重信息
 const _DEFAULT_WEIGHTS: Dictionary[GameEnums.TankPropType, int] = {
-	GameEnums.TankPropType.timer: 5,
+	GameEnums.TankPropType.timer: 8,
 	GameEnums.TankPropType.bomb: 10,
 	GameEnums.TankPropType.star: 8,
 	GameEnums.TankPropType.hat: 10,
-	GameEnums.TankPropType.master_defense: 20,
-	GameEnums.TankPropType.reinforcements: 15
+	GameEnums.TankPropType.ferry: 20,
+	GameEnums.TankPropType.gun: 3,
+	GameEnums.TankPropType.master_defense: 15,
+	GameEnums.TankPropType.reinforcements: 15,
 }
 
 ## 生成道具的权重信息
@@ -46,8 +48,9 @@ func generate_prop() -> void:
 	print('生成道具：{0}, 位置：{1}'.format([GameEnums \
 		.get_tank_prop_type_description(prop_type), Vector2(x, y)]))
 	var prop = TankProp.create(prop_type, Vector2(x, y))
+	prop.set_prop_score(GameGlobals.get_tank_prop_score(prop_type))
 	_exists_prop = prop #赋值新的道具对象
-	add_child(prop) #把道具添加到地图中
+	call_deferred(&'add_child', prop) #把道具添加到地图中
 
 ## 生成随机道具
 func _generate_random_prop() -> DataResult:

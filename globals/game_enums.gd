@@ -93,8 +93,12 @@ enum TankPropType {
 	bomb,
 	## 星星
 	star,
+	## 手枪
+	gun,
 	## 保护帽
 	hat,
+	## 轮渡
+	ferry,
 	## 总部防御
 	master_defense,
 	## 增援
@@ -108,6 +112,8 @@ func get_tank_prop_name(type: TankPropType) -> String:
 		TankPropType.bomb: return 'bomb'
 		TankPropType.star: return 'star'
 		TankPropType.hat: return 'hat'
+		TankPropType.gun: return 'gun'
+		TankPropType.ferry: return 'ferry'
 		TankPropType.master_defense: return 'master_defense'
 		TankPropType.reinforcements: return 'reinforcements'
 	push_error('道具类型错误：{0}'.format([type]))
@@ -120,6 +126,8 @@ func get_tank_prop_type_description(type: TankPropType) -> String:
 		TankPropType.bomb: return '炸弹'
 		TankPropType.star: return '五角星'
 		TankPropType.hat: return '保护帽'
+		TankPropType.ferry: return '轮渡'
+		TankPropType.gun: return '手枪'
 		TankPropType.master_defense: return '总部防御'
 		TankPropType.reinforcements: return '增援'
 	push_error('道具类型错误：{0}'.format([type]))
