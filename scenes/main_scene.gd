@@ -73,6 +73,7 @@ func _enter_tree() -> void:
 		.connect(_remove_one_from_enemy_grids) # 如果生产一个敌方坦克，移除一个标志
 	_tank_factory.tank_reinforcements \
 		.connect(_on_tank_reinforcements) #添加一个敌人标记
+	_tank_factory.master_defense.connect(_on_master_defense)
 	GameGlobals.add_child_to_war_map \
 		.connect(func(e): _on_add_child_to_war_map(e)) # 添加新节点到地图中
 	GameGlobals.set_game_state(GameEnums.GameState.playing) # 设置游戏状态为游玩中
@@ -161,6 +162,8 @@ func _layout_map_tiles(map_data: Array) -> void:
 			if type != GameEnums.MapTileType.grass:
 				_war_map.add_child(map_tile)
 			else: _grass_war_map.add_child(map_tile)
+	#for map_tile: MapTile in _player_master_wall_tiles:
+		#map_tile.set_map_tile_to_steel_wall_directly()
 	print('完成获取玩家总部地砖信息，total: {0}'.format([_player_master_wall_tiles.size()]))
 
 ## 生成敌方表格数据
@@ -224,6 +227,20 @@ func _generate_player_tank() -> void:
 	if GameGlobals.decrement_one_player_life(): # 减少一条生命数
 		_player_lifes.set_number(GameGlobals.get_player_life_count())
 	_tank_factory.generate_player_tank(_generate_player_tank) # 生成新玩家
+
+## 总部防御
+## - [type] - 对应它的总部类型
+func _on_master_defense(type: GameEnums.TankType) -> void:
+	for map_tile: MapTile in _player_master_wall_tiles:
+		map_tile.queue_free()
+	_player_master_wall_tiles.clear()
+	if type != GameEnums.TankType.player: return
+	for coord in _player_master_wall_tile_coords:
+		var tile = MapTile.create(Vector2( \
+			coord.x * GameGlobals.GAME_MAP_TILE_SIZE, \
+			coord.y * GameGlobals.GAME_MAP_TILE_SIZE))
+		tile.set_map_tile_to_steel_wall_directly()
+		_war_map.add_child(tile)
 
 ## 坦克增援
 func _on_tank_reinforcements(type: GameEnums.TankType) -> void:

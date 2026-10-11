@@ -7,8 +7,11 @@ class_name TankFactory
 ## 红坦克收到攻击时的反馈事件
 signal red_tank_attacked()
 
-##坦克增加增援
+## 坦克增加增援
 signal tank_reinforcements()
+
+## 总部防御
+signal master_defense(type: GameEnums.TankType)
 
 ## 是否开启debug模式
 @export
@@ -90,6 +93,8 @@ func generate_player_tank(explode_finished: Callable) -> void:
 	tank.set_capabilities([ \
 		# CapabilityProperty.Ferry.new(), \
 		CapabilityProperty.ProtectClothes.new(10.0)])
+	tank.master_defense \
+		.connect(func(e): master_defense.emit(e))
 	tank.tank_reinforcements \
 		.connect(func(e): tank_reinforcements.emit(e))
 	tank.explode_finished.connect(explode_finished)
@@ -131,6 +136,8 @@ func _generate_enemy_tank(born_position: Vector2) -> void:
 			.connect(func(): red_tank_attacked.emit())
 	tank.speed = _enemty_tank_speeds[rand_type] \
 		if _enemty_tank_speeds.has(rand_type) else 100.0
+	tank.master_defense \
+		.connect(func(e): master_defense.emit(e))
 	tank.tank_reinforcements.connect(_on_tank_reinforcements)
 	add_child(tank) # 添加生成的坦克到子节点
 	on_born_one_enemy_tank.emit() # 发送事件，标记生产了一个敌人坦克

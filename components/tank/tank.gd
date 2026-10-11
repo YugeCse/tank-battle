@@ -10,7 +10,10 @@ signal explode_finished()
 ## 红坦克收到攻击时的反馈事件
 signal red_tank_attacked()
 
-## 敌方坦克增援
+## 总部防御事件
+signal master_defense(type: GameEnums.TankType)
+
+## 坦克增援
 signal tank_reinforcements(type: GameEnums.TankType)
 
 ## 是否允许被控制
@@ -336,7 +339,7 @@ func fetch_prop(type: GameEnums.TankPropType) -> void:
 			_capabilities.append(CapabilityProperty.ProtectClothes.new())
 			show_protected_effect() # 添加保护特效
 		GameEnums.TankPropType.master_defense: #总部防御
-			pass
+			master_defense.emit(_tank_type)
 		GameEnums.TankPropType.reinforcements: #增加增援
 			tank_reinforcements.emit(_tank_type) #添加一个敌人的坦克
 	print('拾取道具: {0}'.format([GameEnums.get_tank_prop_type_description(type)]))

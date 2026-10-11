@@ -10,6 +10,15 @@ signal player_master_explode_finished()
 ## 地砖的表格坐标
 var _grid_coord: Vector2i
 
+## 类型切换定时器
+var _switch_type_timer: Timer
+
+## 类型切换计数器
+var _switch_type_counter: int = 0
+
+## 切换到铁墙的定时器
+var _switch_steel_wall_directly_timer: Timer
+
 ## 地砖的碰撞形状
 @export
 var _collision_shape: CollisionShape2D
@@ -87,6 +96,78 @@ func set_master_boom_status() -> void:
 		add_child(audioStreamPlayer)
 	player_master_explode_finished.emit() # 玩家爆炸完成事件
 	$Sprite2D.texture = load('res://assets/textures/map_tile_player_home_destroy.tres') as AtlasTexture
+
+## 取消类型切换定时器
+func dispose_switch_type_timer() -> void:
+	if not _switch_type_timer: return
+	if not _switch_type_timer.is_stopped():
+		_switch_type_timer.stop()
+	_switch_type_timer.queue_free()
+	_switch_type_timer = null
+	_switch_type_counter = 0
+
+## 切换泥墙和铁墙状态
+func toggle_steel_wall_to_mud_wall() -> void:
+	dispose_switch_steel_wall_directly_timer()
+	dispose_switch_type_timer()
+	_switch_type_timer = Timer.new()
+	_switch_type_timer.wait_time = 0.5
+	_switch_type_timer.autostart = true
+	_switch_type_timer.one_shot = false
+	_switch_type_timer.timeout \
+		.connect(_on_switch_map_tile_timer_tick);
+	add_child(_switch_type_timer)
+
+## 切换泥墙铁墙逻辑的定时器处理方法
+func _on_switch_map_tile_timer_tick() -> void:
+	if _switch_type_counter % 2 == 0:
+		switch_steel_wall_to_mud_wall()
+	else: switch_mud_wall_to_steel_wall()
+	if _switch_type_counter >= 12:
+		dispose_switch_type_timer()
+		return
+	_switch_type_counter += 1 #每次计数增加一次
+		
+## 把泥墙地块变成铁墙地块
+func switch_mud_wall_to_steel_wall() -> void:
+	set_collision_layer_value( \
+		CollisionLayers.layer_map_tile_mud_wall, false)
+	set_map_title_type(GameEnums.MapTileType.steel_wall)
+
+## 把铁墙地块变成泥墙地块
+func switch_steel_wall_to_mud_wall() -> void:
+	set_collision_layer_value( \
+		CollisionLayers.layer_map_tile_steel_wall, false)
+	set_map_title_type(GameEnums.MapTileType.mud_wall)
+
+## 设置地砖直接变成贴墙的，内部有计算，会在 20s还原成泥墙
+func set_map_tile_to_steel_wall_directly() -> void:
+	dispose_switch_type_timer()
+	set_collision_layer_value( \
+		CollisionLayers.layer_map_tile_steel_wall, true)
+	set_collision_layer_value( \
+		CollisionLayers.layer_map_tile_mud_wall, false)
+	set_map_title_type(GameEnums.MapTileType.steel_wall)
+	_switch_type_counter = 0
+	_switch_steel_wall_directly_timer = Timer.new()
+	_switch_steel_wall_directly_timer.wait_time = 20.0
+	_switch_steel_wall_directly_timer.one_shot = true
+	_switch_steel_wall_directly_timer.autostart = true
+	_switch_steel_wall_directly_timer.timeout \
+		.connect(toggle_steel_wall_to_mud_wall)
+	add_child(_switch_steel_wall_directly_timer)
+
+## 禁用定时器对象
+func dispose_switch_steel_wall_directly_timer() -> void:
+	if not _switch_steel_wall_directly_timer: return
+	if not _switch_steel_wall_directly_timer.is_stopped():
+		_switch_steel_wall_directly_timer.stop()
+	_switch_steel_wall_directly_timer.queue_free()
+	_switch_steel_wall_directly_timer = null
+
+func _exit_tree() -> void:
+	dispose_switch_type_timer()
+	dispose_switch_steel_wall_directly_timer()
 
 ## 创建实例
 static func create(location: Vector2) -> MapTile:
